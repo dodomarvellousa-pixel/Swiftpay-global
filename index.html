@@ -165,6 +165,12 @@ function resetDemo(){balances={USD:12480.50,EUR:850,GBP:420,NGN:245000,CAD:300};
 document.getElementById('displayCurrency').addEventListener('change',render);
 ['fxAmount','fxFrom','fxTo'].forEach(id=>document.getElementById(id).addEventListener('input',calculateFx));
 render();
+
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
 </script>
-</body></html>
+
+<script src="./swiftpay-auth.js"></script>
+
+</body>
+</html>
