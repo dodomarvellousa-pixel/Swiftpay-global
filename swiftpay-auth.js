@@ -14,12 +14,14 @@
   const saveAccount = account =>
     localStorage.setItem(KEY, JSON.stringify(account));
 
-  const hashPassword = async password => {
-    const data = new TextEncoder().encode(password);
-    const hash = await crypto.subtle.digest("SHA-256", data);
-    return Array.from(new Uint8Array(hash))
-      .map(x => x.toString(16).padStart(2, "0")).join("");
-  };
+  const hashPassword = password => {
+  let hash = 2166136261;
+  for (let i = 0; i < password.length; i++) {
+    hash ^= password.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+};
 
   const style = document.createElement("style");
   style.textContent = `
