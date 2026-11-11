@@ -179,10 +179,10 @@
         }
         showDashboard(account);
       }
-    } catch {
-      $("swift-error").textContent =
-        "Your browser could not save this demo account.";
-    }
+    } catch (error) {
+  $("swift-error").textContent =
+    "Save failed: " + (error?.message || String(error));
+}
   };
 
   const app = document.querySelector(".app");
