@@ -1,0 +1,199 @@
+
+/* SwiftPay Global — Phase 2 demo authentication */
+(() => {
+  const KEY = "swiftpay_demo_account_v1";
+
+  const readAccount = () => {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) || "null");
+    } catch {
+      return null;
+    }
+  };
+
+  const saveAccount = account =>
+    localStorage.setItem(KEY, JSON.stringify(account));
+
+  const hashPassword = async password => {
+    const data = new TextEncoder().encode(password);
+    const hash = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hash))
+      .map(x => x.toString(16).padStart(2, "0")).join("");
+  };
+
+  const style = document.createElement("style");
+  style.textContent = `
+    #swift-auth {
+      min-height:100vh;display:grid;place-items:center;
+      padding:24px;background:#f4f7fc;
+      font-family:system-ui,sans-serif;color:#14233b;
+    }
+    #swift-auth .auth-card {
+      width:min(100%,420px);background:white;
+      border:1px solid #e7edf5;border-radius:22px;
+      padding:26px;box-shadow:0 12px 40px #203b6418;
+    }
+    #swift-auth .brand {
+      font-size:22px;font-weight:850;color:#102b54;
+    }
+    #swift-auth .sub {font-size:13px;color:#71809a;}
+    #swift-auth label {
+      display:block;font-size:12px;font-weight:750;margin:14px 0 6px;
+    }
+    #swift-auth input {
+      width:100%;box-sizing:border-box;border:1px solid #dce4ef;
+      border-radius:11px;padding:13px;font:inherit;
+    }
+    #swift-auth button {
+      width:100%;border:0;border-radius:12px;
+      background:#246bfd;color:white;font-weight:800;
+      padding:14px;margin-top:18px;font:inherit;
+    }
+    #swift-auth .switch {
+      background:white;color:#246bfd;border:1px solid #dce4ef;
+      margin-top:9px;
+    }
+    #swift-auth .error {color:#c03950;font-size:12px;}
+    #swift-auth .note {
+      background:#fff8e8;padding:11px;border-radius:10px;
+      font-size:11px;line-height:1.5;margin-top:17px;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const root = document.createElement("div");
+  root.id = "swift-auth";
+  root.innerHTML = `
+    <div class="auth-card">
+      <div class="brand">S SwiftPay Global</div>
+      <p class="sub">Your global wallet demo starts here.</p>
+      <form id="swift-form">
+        <div id="name-wrap">
+          <label>Full name</label>
+          <input id="swift-name" placeholder="Your name" maxlength="60">
+        </div>
+        <label>Email address</label>
+        <input id="swift-email" type="email" placeholder="you@example.com" required>
+        <label>Password</label>
+        <input id="swift-password" type="password"
+          minlength="8" placeholder="At least 8 characters" required>
+        <div class="error" id="swift-error" role="alert"></div>
+        <button id="swift-submit">Create demo account</button>
+      </form>
+      <button class="switch" id="swift-switch" type="button">
+        Already registered? Log in
+      </button>
+      <div class="note">
+        Demo only: account details are stored on this device.
+        Do not use a real banking password. No real payments are connected.
+      </div>
+    </div>
+  `;
+  document.body.prepend(root);
+
+  let mode = "signup";
+  const $ = id => root.querySelector("#" + id);
+
+  function setMode(next) {
+    mode = next;
+    $("name-wrap").hidden = mode !== "signup";
+    $("swift-submit").textContent =
+      mode === "signup" ? "Create demo account" : "Log in";
+    $("swift-switch").textContent =
+      mode === "signup"
+        ? "Already registered? Log in"
+        : "New here? Create an account";
+    $("swift-error").textContent = "";
+  }
+
+  function showDashboard(account) {
+    root.style.display = "none";
+    const app = document.querySelector(".app");
+    if (app) app.style.display = "";
+    const nav = document.querySelector(".nav");
+    if (nav) nav.style.display = "";
+
+    const profile = document.querySelector("#profile .panel");
+    if (profile && !$("swift-logout")) {
+      const row = document.createElement("div");
+      row.innerHTML = "<strong id='swift-profile-name'></strong>";
+      profile.prepend(row);
+
+      const logout = document.createElement("button");
+      logout.id = "swift-logout";
+      logout.className = "secondary";
+      logout.textContent = "Log out";
+      logout.onclick = () => {
+        root.style.display = "grid";
+        if (app) app.style.display = "none";
+        if (nav) nav.style.display = "none";
+        setMode("login");
+        $("swift-email").value = account.email;
+        $("swift-password").value = "";
+      };
+      profile.appendChild(logout);
+    }
+
+    const name = document.querySelector("#swift-profile-name");
+    if (name) name.textContent = "Welcome, " + account.name;
+  }
+
+  $("swift-switch").onclick = () =>
+    setMode(mode === "signup" ? "login" : "signup");
+
+  $("swift-form").onsubmit = async event => {
+    event.preventDefault();
+    $("swift-error").textContent = "";
+
+    const name = $("swift-name").value.trim();
+    const email = $("swift-email").value.trim().toLowerCase();
+    const password = $("swift-password").value;
+
+    if (password.length < 8) {
+      $("swift-error").textContent = "Password must be at least 8 characters.";
+      return;
+    }
+
+    try {
+      const account = readAccount();
+      const passwordHash = await hashPassword(password);
+
+      if (mode === "signup") {
+        if (!name) {
+          $("swift-error").textContent = "Enter your name.";
+          return;
+        }
+        if (account) {
+          $("swift-error").textContent =
+            "An account already exists on this device. Please log in.";
+          return;
+        }
+        const newAccount = { name, email, passwordHash };
+        saveAccount(newAccount);
+        showDashboard(newAccount);
+      } else {
+        if (!account || account.email !== email ||
+            account.passwordHash !== passwordHash) {
+          $("swift-error").textContent = "Email or password is incorrect.";
+          return;
+        }
+        showDashboard(account);
+      }
+    } catch {
+      $("swift-error").textContent =
+        "Your browser could not save this demo account.";
+    }
+  };
+
+  const app = document.querySelector(".app");
+  const nav = document.querySelector(".nav");
+  if (app) app.style.display = "none";
+  if (nav) nav.style.display = "none";
+
+  const existing = readAccount();
+  if (existing) {
+    setMode("login");
+    $("swift-email").value = existing.email;
+  }
+})();
+                                        
