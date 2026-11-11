@@ -1,0 +1,17 @@
+{
+  "name": "SwiftPay Global",
+  "short_name": "SwiftPay",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7fc",
+  "theme_color": "#102b54",
+  "description": "SwiftPay Global simulated multi-currency and crypto wallet prototype.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

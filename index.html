@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#102b54">
+<meta name="description" content="SwiftPay Global demo wallet — simulated multi-currency and crypto dashboard.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>SwiftPay Global</title>
+<style>
+:root{--navy:#102b54;--blue:#246bfd;--blue2:#eaf1ff;--ink:#14233b;--muted:#71809a;--bg:#f4f7fc;--line:#e7edf5;--green:#139b70;--red:#d94b62;--card:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.app{max-width:1100px;margin:auto;min-height:100vh;padding-bottom:88px}
+.top{background:var(--navy);color:white;padding:22px 20px 30px;border-radius:0 0 26px 26px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.4px}.logo{width:35px;height:35px;border-radius:12px;background:#fff;color:var(--blue);display:grid;place-items:center;font-weight:900;font-size:20px}.avatar{border:1px solid #ffffff55;background:#ffffff18;color:white;border-radius:50%;width:38px;height:38px}
+.eyebrow{color:#b9c9e5;font-size:12px;margin-top:23px}.balance{font-size:34px;font-weight:800;letter-spacing:-1px;margin:3px 0}.balance-row{display:flex;align-items:center;gap:9px}.currency-select{background:#ffffff18;color:white;border:1px solid #ffffff44;border-radius:9px;padding:6px 8px}.currency-select option{color:#14233b}.subline{font-size:12px;color:#c3d2e9}
+.content{padding:18px 16px}.section-head{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 12px}.section-head h2{font-size:17px;margin:0}.small{font-size:12px;color:var(--muted)}.link{border:0;background:none;color:var(--blue);font-weight:700;padding:5px}
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.action{border:0;background:white;border-radius:16px;padding:14px 5px;box-shadow:0 4px 18px #203b6410;color:var(--ink);font-size:12px;font-weight:650}.action .ico{display:grid;place-items:center;margin:0 auto 8px;width:39px;height:39px;background:var(--blue2);color:var(--blue);border-radius:13px;font-size:19px}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:0 5px 20px #203b6408}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}.asset{display:flex;align-items:center;gap:10px;min-width:0}.coin{width:37px;height:37px;border-radius:50%;display:grid;place-items:center;background:#f0f3fa;font-weight:800}.asset strong{display:block;font-size:13px}.asset small{display:block;color:var(--muted);font-size:11px}.asset-value{margin-left:auto;text-align:right;font-weight:750;font-size:13px}.positive{color:var(--green)}.negative{color:var(--red)}
+.tx{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}.tx:last-child{border:0;padding-bottom:0}.txicon{width:37px;height:37px;border-radius:12px;background:#f1f4fa;display:grid;place-items:center}.txmain{flex:1;min-width:0}.txmain strong{display:block;font-size:13px}.txmain small{color:var(--muted);font-size:11px}.txamt{text-align:right;font-size:13px;font-weight:750}.pill{display:inline-block;border-radius:99px;background:#edf8f3;color:var(--green);padding:3px 7px;font-size:10px;margin-top:3px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));}.navinner{width:min(700px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.nav button{border:0;background:none;color:#8491a6;font-size:11px;padding:6px}.nav button b{display:block;font-size:19px;margin-bottom:2px}.nav button.active{color:var(--blue);font-weight:800}
+.page{display:none}.page.active{display:block}.page-title{font-size:23px;margin:5px 0 3px}.page-intro{color:var(--muted);font-size:13px;margin:0 0 18px}
+.field{margin:13px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid #dce4ef;border-radius:11px;padding:12px;background:white;color:var(--ink);outline:none}.primary{width:100%;border:0;border-radius:12px;background:var(--blue);color:white;font-weight:800;padding:13px;margin-top:8px}.secondary{border:1px solid var(--line);background:white;border-radius:10px;padding:9px 12px;color:var(--blue);font-weight:700}.notice{background:#fff8e8;border:1px solid #f5e4bd;color:#77551a;padding:11px 12px;border-radius:12px;font-size:12px;margin:14px 0}
+.rate-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}.rate-row:last-child{border:0}.muted-card{background:#f7f9fd;border-radius:12px;padding:12px;font-size:12px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#14233b;color:white;padding:11px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:10;white-space:nowrap}.toast.show{opacity:1}
+@media(min-width:720px){.top{padding:26px 32px 34px}.content{padding:24px 30px}.dashboard-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}.actions{gap:14px}.action{padding:17px}.page{max-width:760px;margin:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="topline"><div class="brand"><div class="logo">S</div>SwiftPay <span style="font-weight:500;color:#b9c9e5">Global</span></div><button class="avatar" aria-label="Profile" onclick="showPage('profile')">👤</button></div>
+ <div class="eyebrow">TOTAL DEMO WALLET BALANCE</div>
+ <div class="balance-row"><div class="balance" id="totalBalance">$12,480.50</div><select class="currency-select" id="displayCurrency" aria-label="Display currency"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option><option>CAD</option></select></div>
+ <div class="subline">Demo account · No real funds or bank connection</div>
+</header>
+<main class="content">
+<section id="home" class="page active">
+ <div class="section-head"><h2>Quick actions</h2><span class="small">Demo mode</span></div>
+ <div class="actions">
+  <button class="action" onclick="showPage('transfer')"><span class="ico">↗</span>Send</button>
+  <button class="action" onclick="showPage('receive')"><span class="ico">↙</span>Receive</button>
+  <button class="action" onclick="showPage('exchange')"><span class="ico">⇄</span>Exchange</button>
+  <button class="action" onclick="showPage('crypto')"><span class="ico">₿</span>Crypto</button>
+ </div>
+ <div class="dashboard-grid">
+ <div>
+  <div class="section-head"><h2>My currencies</h2><button class="link" onclick="showPage('wallet')">View all</button></div>
+  <div class="panel" id="currencyList"></div>
+  <div class="section-head"><h2>Crypto portfolio</h2><button class="link" onclick="showPage('crypto')">Explore</button></div>
+  <div class="panel" id="cryptoPreview"></div>
+ </div>
+ <div>
+  <div class="section-head"><h2>Recent activity</h2><button class="link" onclick="showPage('activity')">See all</button></div>
+  <div class="panel" id="recentList"></div>
+  <div class="notice">This is a prototype. Balances, exchange quotes and transfers are simulated and have no cash value.</div>
+ </div>
+ </div>
+</section>
+<section id="wallet" class="page">
+ <h1 class="page-title">Global wallet</h1><p class="page-intro">Your demo balances across supported currencies.</p>
+ <div class="panel" id="walletList"></div>
+ <div class="muted-card" style="margin-top:12px">Currency availability, local account details and payment rails depend on country and regulated partners.</div>
+</section>
+<section id="transfer" class="page">
+ <h1 class="page-title">Send money</h1><p class="page-intro">Try a simulated transfer between demo wallets.</p>
+ <div class="panel">
+  <div class="field"><label>Recipient name</label><input id="recipient" placeholder="e.g. Alex Morgan"></div>
+  <div class="field"><label>Recipient demo ID</label><input id="recipientId" placeholder="e.g. SWP-2048"></div>
+  <div class="field"><label>Currency</label><select id="sendCurrency"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option><option>CAD</option></select></div>
+  <div class="field"><label>Amount</label><input id="sendAmount" type="number" min="0.01" step="0.01" placeholder="0.00"></div>
+  <div class="field"><label>Note (optional)</label><input id="sendNote" placeholder="What is this for?"></div>
+  <button class="primary" onclick="sendDemo()">Review & simulate transfer</button>
+ </div>
+ <div class="notice">No money is sent. Do not enter real bank details, card information, passwords or OTPs.</div>
+</section>
+<section id="receive" class="page">
+ <h1 class="page-title">Receive money</h1><p class="page-intro">Share your sample account details with another tester.</p>
+ <div class="panel">
+  <div class="small">YOUR DEMO SWIFTPAY ID</div><h2 style="letter-spacing:1px">SWP-8392-1046</h2>
+  <div class="rate-row"><span>Account name</span><strong>SwiftPay Demo User</strong></div>
+  <div class="rate-row"><span>Account status</span><strong class="positive">Demo active</strong></div>
+  <button class="primary" onclick="copyId()">Copy demo ID</button>
+ </div><div class="notice">This is not a bank account number and cannot receive real payments.</div>
+</section>
+<section id="exchange" class="page">
+ <h1 class="page-title">Currency exchange</h1><p class="page-intro">Indicative sample rates for interface testing only.</p>
+ <div class="panel">
+  <div class="field"><label>You send</label><div style="display:flex;gap:8px"><input id="fxAmount" type="number" value="100" min="0.01" style="flex:1"><select id="fxFrom" style="width:105px"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option><option>CAD</option></select></div></div>
+  <div style="text-align:center;color:var(--blue);font-size:22px">⇅</div>
+  <div class="field"><label>They receive (estimate)</label><div style="display:flex;gap:8px"><input id="fxResult" readonly style="flex:1"><select id="fxTo" style="width:105px"><option>NGN</option><option>USD</option><option>EUR</option><option>GBP</option><option>CAD</option></select></div></div>
+  <div class="muted-card" id="fxRate">Sample rate · not a live quote</div><button class="primary" onclick="calculateFx()">Calculate estimate</button>
+ </div>
+</section>
+<section id="crypto" class="page">
+ <h1 class="page-title">Crypto wallet</h1><p class="page-intro">Explore a simulated digital-asset portfolio.</p>
+ <div class="panel"><div class="small">DEMO CRYPTO VALUE</div><h2 style="font-size:29px;margin:4px 0">$2,840.25</h2><span class="positive">+2.4% sample movement</span></div>
+ <div class="section-head"><h2>Your assets</h2></div><div class="panel" id="cryptoList"></div>
+ <div class="notice">Crypto prices and holdings are fictional demo data. No blockchain wallet, custody, deposit, withdrawal or trading is connected.</div>
+ <button class="primary" onclick="toast('Crypto trading is disabled in this demo.')">Preview crypto actions</button>
+</section>
+<section id="activity" class="page">
+ <h1 class="page-title">Activity</h1><p class="page-intro">Your simulated transaction history.</p><div class="panel" id="allActivity"></div>
+</section>
+<section id="profile" class="page">
+ <h1 class="page-title">Profile & settings</h1><p class="page-intro">Prototype account preferences.</p>
+ <div class="panel">
+  <div class="rate-row"><span>Profile</span><strong>SwiftPay Demo User</strong></div>
+  <div class="rate-row"><span>Account type</span><strong>Prototype</strong></div>
+  <div class="rate-row"><span>Region</span><strong>Global demo</strong></div>
+  <div class="rate-row"><span>Security</span><strong>Demo only</strong></div>
+  <div class="rate-row"><span>App version</span><strong>0.1.0</strong></div>
+  <button class="secondary" style="margin-top:14px" onclick="resetDemo()">Reset demo data</button>
+ </div><div class="notice">Do not use this prototype to store real personal or financial information.</div>
+</section>
+</main>
+</div>
+<nav class="nav"><div class="navinner">
+ <button class="active" data-page="home" onclick="showPage('home')"><b>⌂</b>Home</button>
+ <button data-page="wallet" onclick="showPage('wallet')"><b>▣</b>Wallet</button>
+ <button data-page="activity" onclick="showPage('activity')"><b>↻</b>Activity</button>
+ <button data-page="profile" onclick="showPage('profile')"><b>♙</b>Profile</button>
+</div></nav>
+<div class="toast" id="toast"></div>
+<script>
+const rates={USD:1,EUR:.92,GBP:.79,NGN:1550,CAD:1.36};
+const symbols={USD:'$',EUR:'€',GBP:'£',NGN:'₦',CAD:'C$'};
+let balances={USD:12480.50,EUR:850.00,GBP:420.00,NGN:245000, CAD:300.00};
+let txs=[
+ {name:'Coffee House',detail:'Card payment · Today, 10:42',amount:-6.50,currency:'USD',icon:'☕'},
+ {name:'Salary payment',detail:'Incoming · Yesterday',amount:2200,currency:'USD',icon:'↙'},
+ {name:'Currency exchange',detail:'USD to EUR · 8 Nov',amount:-150,currency:'USD',icon:'⇄'},
+ {name:'Mobile data',detail:'Bill payment · 7 Nov',amount:-12,currency:'USD',icon:'▤'}
+];
+const crypto=[['₿','Bitcoin','BTC','$1,820.00'],['◆','Ethereum','ETH','$720.25'],['₮','Tether','USDT','$300.00']];
+const fmt=(n,c)=>symbols[c]+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+function usdTotal(){return Object.entries(balances).reduce((s,[c,v])=>s+v/rates[c],0)}
+function render(){
+ const cur=document.getElementById('displayCurrency').value;
+ document.getElementById('totalBalance').textContent=fmt(usdTotal()*rates[cur],cur);
+ const rows=Object.entries(balances).map(([c,v])=>`<div class="tx"><div class="coin">${c==='NGN'?'₦':c==='EUR'?'€':c==='GBP'?'£':c==='CAD'?'C$':'$'}</div><div class="txmain"><strong>${c}</strong><small>${({USD:'US Dollar',EUR:'Euro',GBP:'British Pound',NGN:'Nigerian Naira',CAD:'Canadian Dollar'})[c]}</small></div><div class="asset-value">${fmt(v,c)}</div></div>`).join('');
+ document.getElementById('currencyList').innerHTML=rows;
+ document.getElementById('walletList').innerHTML=rows;
+ const cr=crypto.map(x=>`<div class="tx"><div class="coin">${x[0]}</div><div class="txmain"><strong>${x[1]}</strong><small>${x[2]}</small></div><div class="asset-value">${x[3]}</div></div>`).join('');
+ document.getElementById('cryptoPreview').innerHTML=cr;
+ document.getElementById('cryptoList').innerHTML=cr;
+ const txhtml=txs.map(t=>`<div class="tx"><div class="txicon">${t.icon}</div><div class="txmain"><strong>${escapeHtml(t.name)}</strong><small>${escapeHtml(t.detail)}</small><span class="pill">Simulated</span></div><div class="txamt ${t.amount<0?'':'positive'}">${t.amount<0?'−':'+'}${fmt(Math.abs(t.amount),t.currency)}</div></div>`).join('');
+ document.getElementById('recentList').innerHTML=txhtml;
+ document.getElementById('allActivity').innerHTML=txhtml;
+ calculateFx();
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo(0,0)}
+function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
+function sendDemo(){
+ const name=document.getElementById('recipient').value.trim(),id=document.getElementById('recipientId').value.trim(),c=document.getElementById('sendCurrency').value,a=Number(document.getElementById('sendAmount').value),note=document.getElementById('sendNote').value.trim();
+ if(!name||!id||!Number.isFinite(a)||a<=0){toast('Enter a recipient and a valid amount.');return}
+ if(a>balances[c]){toast('Insufficient demo balance.');return}
+ balances[c]-=a;txs.unshift({name:'Transfer to '+name,detail:'Demo ID '+id+(note?' · '+note:''),amount:-a,currency:c,icon:'↗'});render();toast('Demo transfer recorded — no money moved.');document.getElementById('recipient').value='';document.getElementById('recipientId').value='';document.getElementById('sendAmount').value='';showPage('activity');
+}
+function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
+function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
+function resetDemo(){balances={USD:12480.50,EUR:850,GBP:420,NGN:245000,CAD:300};txs=txs.slice(-4);render();toast('Demo data reset.')}
+document.getElementById('displayCurrency').addEventListener('change',render);
+['fxAmount','fxFrom','fxTo'].forEach(id=>document.getElementById(id).addEventListener('input',calculateFx));
+render();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
