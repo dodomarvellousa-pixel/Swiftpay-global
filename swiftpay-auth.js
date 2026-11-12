@@ -89,6 +89,14 @@
       margin-top:9px;
     }
     #swift-auth .error {color:#c03950;font-size:12px;}
+    #swift-auth .password-strength {
+  font-size:12px;
+  margin-top:7px;
+  font-weight:700;
+}
+#swift-auth .password-strength.weak {color:#c03950;}
+#swift-auth .password-strength.medium {color:#d68910;}
+#swift-auth .password-strength.strong {color:#219653;}
     #swift-auth .note {
       background:#fff8e8;padding:11px;border-radius:10px;
       font-size:11px;line-height:1.5;margin-top:17px;
@@ -112,7 +120,9 @@
         <label>Password</label>
 <input id="swift-password" type="password"
   minlength="8" placeholder="At least 8 characters" required>
-
+<div id="swift-password-strength" class="password-strength" hidden>
+  Password strength: —
+</div>
 <button class="switch" id="swift-toggle-password" type="button">
   Show password
 </button>
@@ -135,6 +145,37 @@
 
   let mode = "signup";
   const $ = id => root.querySelector("#" + id);
+  const passwordInput = $("swift-password");
+const strengthDisplay = $("swift-password-strength");
+
+passwordInput.addEventListener("input", () => {
+  if (mode !== "signup") {
+    strengthDisplay.hidden = true;
+    return;
+  }
+
+  const password = passwordInput.value;
+  let score = 0;
+
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  strengthDisplay.hidden = password.length === 0;
+
+  if (score <= 2) {
+    strengthDisplay.textContent = "Password strength: Weak";
+    strengthDisplay.className = "password-strength weak";
+  } else if (score <= 4) {
+    strengthDisplay.textContent = "Password strength: Medium";
+    strengthDisplay.className = "password-strength medium";
+  } else {
+    strengthDisplay.textContent = "Password strength: Strong";
+    strengthDisplay.className = "password-strength strong";
+  }
+});
   $("swift-toggle-password").onclick = () => {
     const passwordField = $("swift-password");
 
@@ -183,6 +224,9 @@
   };
   function setMode(next) {
     mode = next;
+    $("swift-password-strength").hidden = mode !== "signup";
+$("swift-password-strength").textContent = "Password strength: —";
+$("swift-password-strength").className = "password-strength";
     $("name-wrap").hidden = mode !== "signup";
     $("swift-submit").textContent =
       mode === "signup" ? "Create demo account" : "Log in";
