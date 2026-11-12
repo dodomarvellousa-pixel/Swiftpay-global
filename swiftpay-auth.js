@@ -77,8 +77,12 @@
         <label>Email address</label>
         <input id="swift-email" type="email" placeholder="you@example.com" required>
         <label>Password</label>
-        <input id="swift-password" type="password"
-          minlength="8" placeholder="At least 8 characters" required>
+<input id="swift-password" type="password"
+  minlength="8" placeholder="At least 8 characters" required>
+
+<button class="switch" id="swift-toggle-password" type="button">
+  Show password
+</button>
         <div class="error" id="swift-error" role="alert"></div>
         <button id="swift-submit">Create demo account</button>
       </form>
@@ -95,7 +99,17 @@
 
   let mode = "signup";
   const $ = id => root.querySelector("#" + id);
+  $("swift-toggle-password").onclick = () => {
+    const passwordField = $("swift-password");
 
+    if (passwordField.type === "password") {
+      passwordField.type = "text";
+      $("swift-toggle-password").textContent = "Hide password";
+    } else {
+      passwordField.type = "password";
+      $("swift-toggle-password").textContent = "Show password";
+    }
+  };
   function setMode(next) {
     mode = next;
     $("name-wrap").hidden = mode !== "signup";
