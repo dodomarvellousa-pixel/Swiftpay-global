@@ -1,7 +1,22 @@
 /* SwiftPay Global — Phase 2 demo authentication */
 (() => {
   const KEY = "swiftpay_demo_account_v1";
+  const ATTEMPTS_KEY = "swiftpay_demo_login_attempts_v1";
+  const MAX_LOGIN_ATTEMPTS = 5;
+  const LOCKOUT_DURATION_MS = 60 * 1000;
 
+  const readLoginGuard = () => {
+    try {
+      return JSON.parse(
+        localStorage.getItem(ATTEMPTS_KEY) || '{"count":0,"lockedUntil":0}'
+      );
+    } catch {
+      return { count: 0, lockedUntil: 0 };
+    }
+  };
+
+  const saveLoginGuard = guard =>
+    localStorage.setItem(ATTEMPTS_KEY, JSON.stringify(guard));
   const readAccount = () => {
     try {
       return JSON.parse(localStorage.getItem(KEY) || "null");
@@ -144,7 +159,7 @@
 
     account.passwordHash = hashPassword(newPassword);
     saveAccount(account);
-
+    saveLoginGuard({ count: 0, lockedUntil: 0 });
     $("swift-password").value = "";
     alert("Demo password reset successfully. You can now log in.");
   };
@@ -261,6 +276,20 @@ profile.appendChild(logout);
 
   $("swift-form").onsubmit = async event => {
     event.preventDefault();
+        if (mode === "login") {
+      const guard = readLoginGuard();
+
+      if (Date.now() < guard.lockedUntil) {
+        const seconds = Math.ceil(
+          (guard.lockedUntil - Date.now()) / 1000
+        );
+
+        $("swift-error").textContent =
+          "Too many failed attempts. Try again in " +
+          seconds + " seconds.";
+        return;
+      }
+        }
         $("swift-error").textContent = "";
 
     const name = $("swift-name").value.trim();
@@ -292,14 +321,32 @@ profile.appendChild(logout);
         const newAccount = { name, email, passwordHash };
         saveAccount(newAccount);
         showDashboard(newAccount);
-      } else {
+            } else {
         if (!account || account.email !== email ||
             account.passwordHash !== passwordHash) {
-          $("swift-error").textContent =
-            "Email or password is incorrect.";
+
+          const guard = readLoginGuard();
+          guard.count += 1;
+
+          if (guard.count >= MAX_LOGIN_ATTEMPTS) {
+            guard.count = 0;
+            guard.lockedUntil = Date.now() + LOCKOUT_DURATION_MS;
+            saveLoginGuard(guard);
+
+            $("swift-error").textContent =
+              "Too many failed attempts. Login locked for 60 seconds.";
+          } else {
+            saveLoginGuard(guard);
+
+            $("swift-error").textContent =
+              "Email or password is incorrect. Attempts remaining: " +
+              (MAX_LOGIN_ATTEMPTS - guard.count);
+          }
+
           return;
         }
 
+        saveLoginGuard({ count: 0, lockedUntil: 0 });
         showDashboard(account);
       }
     } catch (error) {
