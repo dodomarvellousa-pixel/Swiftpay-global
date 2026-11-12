@@ -2,6 +2,7 @@
 (() => {
   const KEY = "swiftpay_demo_account_v1";
   const ATTEMPTS_KEY = "swiftpay_demo_login_attempts_v1";
+  const SESSION_KEY = "swiftpay_demo_session_v1";
   const MAX_LOGIN_ATTEMPTS = 5;
   const LOCKOUT_DURATION_MS = 60 * 1000;
 
@@ -27,7 +28,24 @@
 
   const saveAccount = account =>
     localStorage.setItem(KEY, JSON.stringify(account));
+  const saveSession = () => {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      active: true,
+      lastActivity: Date.now()
+    }));
+  };
 
+  const readSession = () => {
+    try {
+      return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    } catch {
+      return null;
+    }
+  };
+
+  const clearSession = () => {
+    localStorage.removeItem(SESSION_KEY);
+  };
   // Demo-only password fingerprint; not secure password hashing.
   const hashPassword = password => {
     let hash = 2166136261;
@@ -176,14 +194,17 @@
   }
 
   function showDashboard(account) {
+        saveSession();
         // Automatic logout after 10 minutes of inactivity.
     const SESSION_TIMEOUT_MS = 10 * 60 * 1000;
 let inactivityTimer;
 
 const resetInactivityTimer = () => {
   clearTimeout(inactivityTimer);
+  saveSession();
 
   inactivityTimer = setTimeout(() => {
+    clearSession();
     alert("You have been logged out due to 10 minutes of inactivity.");
     location.reload();
   }, SESSION_TIMEOUT_MS);
@@ -237,6 +258,7 @@ if (profileName && !document.getElementById("swift-profile-email")) {
       logout.textContent = "Log out";
 
       logout.onclick = () => {
+        clearSession();
                 clearTimeout(inactivityTimer);
 
         activityEvents.forEach(event => {
@@ -387,11 +409,23 @@ profile.appendChild(logout);
   if (app) app.style.display = "none";
   if (nav) nav.style.display = "none";
 
-  const existing = readAccount();
+const existing = readAccount();
+const session = readSession();
+
+if (
+  existing &&
+  session &&
+  session.active &&
+  Date.now() - session.lastActivity < 10 * 60 * 1000
+) {
+  showDashboard(existing);
+} else {
+  clearSession();
 
   if (existing) {
     setMode("login");
     $("swift-email").value = existing.email;
   }
+}
 })();
 
