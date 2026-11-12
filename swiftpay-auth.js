@@ -14,14 +14,15 @@
   const saveAccount = account =>
     localStorage.setItem(KEY, JSON.stringify(account));
 
+  // Demo-only password fingerprint; not secure password hashing.
   const hashPassword = password => {
-  let hash = 2166136261;
-  for (let i = 0; i < password.length; i++) {
-    hash ^= password.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return (hash >>> 0).toString(16).padStart(8, "0");
-};
+    let hash = 2166136261;
+    for (let i = 0; i < password.length; i++) {
+      hash ^= password.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16).padStart(8, "0");
+  };
 
   const style = document.createElement("style");
   style.textContent = `
@@ -110,13 +111,26 @@
 
   function showDashboard(account) {
     root.style.display = "none";
+
     const app = document.querySelector(".app");
-    if (app) app.style.display = "";
     const nav = document.querySelector(".nav");
+
+    if (app) app.style.display = "";
     if (nav) nav.style.display = "";
 
+    // Personalize the existing Profile page.
+    const profileName = document.querySelector(
+      "#profile .rate-row:first-child strong"
+    );
+
+    if (profileName) {
+      profileName.textContent = account.name;
+    }
+
+    // Add welcome message and logout button.
     const profile = document.querySelector("#profile .panel");
-    if (profile && !$("swift-logout")) {
+
+    if (profile && !document.querySelector("#swift-logout")) {
       const row = document.createElement("div");
       row.innerHTML = "<strong id='swift-profile-name'></strong>";
       profile.prepend(row);
@@ -125,6 +139,7 @@
       logout.id = "swift-logout";
       logout.className = "secondary";
       logout.textContent = "Log out";
+
       logout.onclick = () => {
         root.style.display = "grid";
         if (app) app.style.display = "none";
@@ -133,11 +148,15 @@
         $("swift-email").value = account.email;
         $("swift-password").value = "";
       };
+
       profile.appendChild(logout);
     }
 
-    const name = document.querySelector("#swift-profile-name");
-    if (name) name.textContent = "Welcome, " + account.name;
+    const welcome = document.querySelector("#swift-profile-name");
+
+    if (welcome) {
+      welcome.textContent = "Welcome, " + account.name;
+    }
   }
 
   $("swift-switch").onclick = () =>
@@ -152,50 +171,56 @@
     const password = $("swift-password").value;
 
     if (password.length < 8) {
-      $("swift-error").textContent = "Password must be at least 8 characters.";
+      $("swift-error").textContent =
+        "Password must be at least 8 characters.";
       return;
     }
 
     try {
       const account = readAccount();
-      const passwordHash = await hashPassword(password);
+      const passwordHash = hashPassword(password);
 
       if (mode === "signup") {
         if (!name) {
           $("swift-error").textContent = "Enter your name.";
           return;
         }
+
         if (account) {
           $("swift-error").textContent =
             "An account already exists on this device. Please log in.";
           return;
         }
+
         const newAccount = { name, email, passwordHash };
         saveAccount(newAccount);
         showDashboard(newAccount);
       } else {
         if (!account || account.email !== email ||
             account.passwordHash !== passwordHash) {
-          $("swift-error").textContent = "Email or password is incorrect.";
+          $("swift-error").textContent =
+            "Email or password is incorrect.";
           return;
         }
+
         showDashboard(account);
       }
     } catch (error) {
-  $("swift-error").textContent =
-    "Save failed: " + (error?.message || String(error));
-}
+      $("swift-error").textContent =
+        "Save failed: " + (error?.message || String(error));
+    }
   };
 
   const app = document.querySelector(".app");
   const nav = document.querySelector(".nav");
+
   if (app) app.style.display = "none";
   if (nav) nav.style.display = "none";
 
   const existing = readAccount();
+
   if (existing) {
     setMode("login");
     $("swift-email").value = existing.email;
   }
 })();
-                                        
