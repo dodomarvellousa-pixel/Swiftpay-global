@@ -126,13 +126,55 @@ button,input,select{font:inherit}button{cursor:pointer}.app{max-width:1100px;mar
 <script>
 const rates={USD:1,EUR:.92,GBP:.79,NGN:1550,CAD:1.36};
 const symbols={USD:'$',EUR:'€',GBP:'£',NGN:'₦',CAD:'C$'};
-let balances={USD:12480.50,EUR:850.00,GBP:420.00,NGN:245000, CAD:300.00};
-let txs=[
- {name:'Coffee House',detail:'Card payment · Today, 10:42',amount:-6.50,currency:'USD',icon:'☕'},
- {name:'Salary payment',detail:'Incoming · Yesterday',amount:2200,currency:'USD',icon:'↙'},
- {name:'Currency exchange',detail:'USD to EUR · 8 Nov',amount:-150,currency:'USD',icon:'⇄'},
- {name:'Mobile data',detail:'Bill payment · 7 Nov',amount:-12,currency:'USD',icon:'▤'}
+
+let balances = {
+  USD: 12480.50,
+  EUR: 850.00,
+  GBP: 420.00,
+  NGN: 245000,
+  CAD: 300.00
+};
+
+let txs = [
+  {name:'Coffee House',detail:'Card payment · Today, 10:42',amount:-6.50,currency:'USD',icon:'☕'},
+  {name:'Salary payment',detail:'Incoming · Yesterday',amount:2200,currency:'USD',icon:'↙'},
+  {name:'Currency exchange',detail:'USD to EUR · 8 Nov',amount:-150,currency:'USD',icon:'⇄'},
+  {name:'Mobile data',detail:'Bill payment · 7 Nov',amount:-12,currency:'USD',icon:'▤'}
 ];
+
+// Save the demo wallet on this phone.
+const WALLET_STORAGE_KEY = "swiftpay_demo_wallet_v1";
+
+function saveDemoWallet() {
+  try {
+    localStorage.setItem(
+      WALLET_STORAGE_KEY,
+      JSON.stringify({ balances, txs })
+    );
+  } catch (error) {
+    console.error("Wallet save failed:", error);
+  }
+}
+
+// Restore the previously saved demo wallet.
+try {
+  const savedWallet = JSON.parse(
+    localStorage.getItem(WALLET_STORAGE_KEY) || "null"
+  );
+
+  if (
+    savedWallet &&
+    savedWallet.balances &&
+    Array.isArray(savedWallet.txs)
+  ) {
+    balances = savedWallet.balances;
+    txs = savedWallet.txs;
+  }
+} catch (error) {
+  console.error("Wallet restore failed:", error);
+}
+
+
 const crypto=[['₿','Bitcoin','BTC','$1,820.00'],['◆','Ethereum','ETH','$720.25'],['₮','Tether','USDT','$300.00']];
 const fmt=(n,c)=>symbols[c]+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 function usdTotal(){return Object.entries(balances).reduce((s,[c,v])=>s+v/rates[c],0)}
@@ -157,11 +199,39 @@ function sendDemo(){
  const name=document.getElementById('recipient').value.trim(),id=document.getElementById('recipientId').value.trim(),c=document.getElementById('sendCurrency').value,a=Number(document.getElementById('sendAmount').value),note=document.getElementById('sendNote').value.trim();
  if(!name||!id||!Number.isFinite(a)||a<=0){toast('Enter a recipient and a valid amount.');return}
  if(a>balances[c]){toast('Insufficient demo balance.');return}
- balances[c]-=a;txs.unshift({name:'Transfer to '+name,detail:'Demo ID '+id+(note?' · '+note:''),amount:-a,currency:c,icon:'↗'});render();toast('Demo transfer recorded — no money moved.');document.getElementById('recipient').value='';document.getElementById('recipientId').value='';document.getElementById('sendAmount').value='';showPage('activity');
+balances[c]-=a;
+txs.unshift({
+  name:'Transfer to '+name,
+  detail:'Demo ID '+id+(note?' · '+note:''),
+  amount:-a,
+  currency:c,
+  icon:'↗'
+});
+saveDemoWallet();
+render();toast('Demo transfer recorded — no money moved.');document.getElementById('recipient').value='';document.getElementById('recipientId').value='';document.getElementById('sendAmount').value='';showPage('activity');
 }
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
 function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
-function resetDemo(){balances={USD:12480.50,EUR:850,GBP:420,NGN:245000,CAD:300};txs=txs.slice(-4);render();toast('Demo data reset.')}
+function resetDemo(){
+  balances={
+    USD:12480.50,
+    EUR:850,
+    GBP:420,
+    NGN:245000,
+    CAD:300
+  };
+
+  txs=[
+    {name:'Coffee House',detail:'Card payment · Today, 10:42',amount:-6.50,currency:'USD',icon:'☕'},
+    {name:'Salary payment',detail:'Incoming · Yesterday',amount:2200,currency:'USD',icon:'↙'},
+    {name:'Currency exchange',detail:'USD to EUR · 8 Nov',amount:-150,currency:'USD',icon:'⇄'},
+    {name:'Mobile data',detail:'Bill payment · 7 Nov',amount:-12,currency:'USD',icon:'▤'}
+  ];
+
+  saveDemoWallet();
+  render();
+  toast('Demo data reset.');
+}
 document.getElementById('displayCurrency').addEventListener('change',render);
 ['fxAmount','fxFrom','fxTo'].forEach(id=>document.getElementById(id).addEventListener('input',calculateFx));
 render();
