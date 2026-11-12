@@ -125,7 +125,16 @@
     if (profileName) {
       profileName.textContent = account.name;
     }
+const profileEmail = document.createElement("p");
+profileEmail.id = "swift-profile-email";
+profileEmail.textContent = "Email: " + account.email;
+profileEmail.style.marginTop = "6px";
+profileEmail.style.fontSize = "13px";
+profileEmail.style.opacity = "0.75";
 
+if (profileName && !document.getElementById("swift-profile-email")) {
+  profileName.parentElement.appendChild(profileEmail);
+}
     // Add welcome message and logout button.
     const profile = document.querySelector("#profile .panel");
 
