@@ -213,6 +213,10 @@ render();toast('Demo transfer recorded — no money moved.');document.getElement
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
 function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
 function resetDemo(){
+  if (!confirm('Are you sure you want to reset all demo wallet data?')) {
+    return;
+  }
+
   balances={
     USD:12480.50,
     EUR:850,
