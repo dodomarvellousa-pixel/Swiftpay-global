@@ -176,6 +176,27 @@
   }
 
   function showDashboard(account) {
+        // Automatic logout after 10 minutes of inactivity.
+    const SESSION_TIMEOUT_MS = 10 * 60 * 1000;
+let inactivityTimer;
+
+const resetInactivityTimer = () => {
+  clearTimeout(inactivityTimer);
+
+  inactivityTimer = setTimeout(() => {
+    alert("You have been logged out due to 10 minutes of inactivity.");
+    location.reload();
+  }, SESSION_TIMEOUT_MS);
+};
+
+const activityEvents = ["click", "touchstart", "keydown", "scroll"];
+
+activityEvents.forEach(event => {
+  document.addEventListener(event, resetInactivityTimer);
+});
+
+resetInactivityTimer();
+
     root.style.display = "none";
 
     const app = document.querySelector(".app");
@@ -216,6 +237,11 @@ if (profileName && !document.getElementById("swift-profile-email")) {
       logout.textContent = "Log out";
 
       logout.onclick = () => {
+                clearTimeout(inactivityTimer);
+
+        activityEvents.forEach(event => {
+  document.removeEventListener(event, resetInactivityTimer);
+});
         root.style.display = "grid";
         if (app) app.style.display = "none";
         if (nav) nav.style.display = "none";
