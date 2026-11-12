@@ -289,7 +289,15 @@ changePassword.onclick = () => {
 
   const newPassword = prompt("Enter your new password (at least 8 characters):");
   if (newPassword === null) return;
-
+  if (
+    newPassword.length < 8 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[0-9]/.test(newPassword)
+  ) {
+    alert("Password must be at least 8 characters and include uppercase, lowercase, and a number.");
+    return;
+  }
   
 
   const confirmPassword = prompt("Confirm your new password:");
@@ -299,7 +307,6 @@ changePassword.onclick = () => {
     alert("Passwords do not match.");
     return;
   }
-
   accountData.passwordHash = hashPassword(newPassword);
   saveAccount(accountData);
   alert("Demo password changed successfully.");
