@@ -1,4 +1,3 @@
-
 /* SwiftPay Global — Phase 2 demo authentication */
 (() => {
   const KEY = "swiftpay_demo_account_v1";
