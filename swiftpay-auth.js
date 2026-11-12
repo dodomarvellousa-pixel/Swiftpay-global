@@ -290,10 +290,7 @@ changePassword.onclick = () => {
   const newPassword = prompt("Enter your new password (at least 8 characters):");
   if (newPassword === null) return;
 
-  if (newPassword.length < 8) {
-    alert("Password must be at least 8 characters.");
-    return;
-  }
+  
 
   const confirmPassword = prompt("Confirm your new password:");
   if (confirmPassword === null) return;
@@ -344,17 +341,22 @@ profile.appendChild(logout);
     const email = $("swift-email").value.trim().toLowerCase();
     const password = $("swift-password").value;
 
-    if (password.length < 8) {
-      $("swift-error").textContent =
-        "Password must be at least 8 characters.";
-      return;
-    }
 
     try {
       const account = readAccount();
       const passwordHash = hashPassword(password);
 
       if (mode === "signup") {
+        if (
+  password.length < 8 ||
+  !/[A-Z]/.test(password) ||
+  !/[a-z]/.test(password) ||
+  !/[0-9]/.test(password)
+) {
+  $("swift-error").textContent =
+    "Password must be at least 8 characters and include uppercase, lowercase, and a number.";
+  return;
+        }
         if (!name) {
           $("swift-error").textContent = "Enter your name.";
           return;
