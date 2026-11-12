@@ -83,6 +83,9 @@
 <button class="switch" id="swift-toggle-password" type="button">
   Show password
 </button>
+<button class="switch" id="swift-forgot-password" type="button">
+  Forgot password?
+</button>
         <div class="error" id="swift-error" role="alert"></div>
         <button id="swift-submit">Create demo account</button>
       </form>
@@ -109,6 +112,41 @@
       passwordField.type = "password";
       $("swift-toggle-password").textContent = "Show password";
     }
+  };
+    $("swift-forgot-password").onclick = () => {
+    const account = readAccount();
+    const email = $("swift-email").value.trim().toLowerCase();
+
+    if (!account || account.email !== email) {
+      alert("Enter the registered email address.");
+      return;
+    }
+
+    const newPassword = prompt(
+      "Enter your new password (at least 8 characters):"
+    );
+
+    if (newPassword === null) return;
+
+    if (newPassword.length < 8) {
+      alert("Password must be at least 8 characters.");
+      return;
+    }
+
+    const confirmPassword = prompt("Confirm your new password:");
+
+    if (confirmPassword === null) return;
+
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    account.passwordHash = hashPassword(newPassword);
+    saveAccount(account);
+
+    $("swift-password").value = "";
+    alert("Demo password reset successfully. You can now log in.");
   };
   function setMode(next) {
     mode = next;
