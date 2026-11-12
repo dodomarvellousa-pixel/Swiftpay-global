@@ -209,6 +209,64 @@ profile.appendChild(logout);
 
   $("swift-form").onsubmit = async event => {
     event.preventDefault();
-    $("swift-error").textContent = "";
+        $("swift-error").textContent = "";
 
-    const
+    const name = $("swift-name").value.trim();
+    const email = $("swift-email").value.trim().toLowerCase();
+    const password = $("swift-password").value;
+
+    if (password.length < 8) {
+      $("swift-error").textContent =
+        "Password must be at least 8 characters.";
+      return;
+    }
+
+    try {
+      const account = readAccount();
+      const passwordHash = hashPassword(password);
+
+      if (mode === "signup") {
+        if (!name) {
+          $("swift-error").textContent = "Enter your name.";
+          return;
+        }
+
+        if (account) {
+          $("swift-error").textContent =
+            "An account already exists on this device. Please log in.";
+          return;
+        }
+
+        const newAccount = { name, email, passwordHash };
+        saveAccount(newAccount);
+        showDashboard(newAccount);
+      } else {
+        if (!account || account.email !== email ||
+            account.passwordHash !== passwordHash) {
+          $("swift-error").textContent =
+            "Email or password is incorrect.";
+          return;
+        }
+
+        showDashboard(account);
+      }
+    } catch (error) {
+      $("swift-error").textContent =
+        "Save failed: " + (error?.message || String(error));
+    }
+  };
+
+  const app = document.querySelector(".app");
+  const nav = document.querySelector(".nav");
+
+  if (app) app.style.display = "none";
+  if (nav) nav.style.display = "none";
+
+  const existing = readAccount();
+
+  if (existing) {
+    setMode("login");
+    $("swift-email").value = existing.email;
+  }
+})();
+
