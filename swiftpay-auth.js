@@ -97,6 +97,16 @@
 #swift-auth .password-strength.weak {color:#c03950;}
 #swift-auth .password-strength.medium {color:#d68910;}
 #swift-auth .password-strength.strong {color:#219653;}
+#swift-auth .password-requirements {
+  font-size:11px;
+  line-height:1.9;
+  margin-top:7px;
+  color:#c03950;
+}
+#swift-auth .password-requirements .met {
+  color:#219653;
+  font-weight:700;
+}
     #swift-auth .note {
       background:#fff8e8;padding:11px;border-radius:10px;
       font-size:11px;line-height:1.5;margin-top:17px;
@@ -123,6 +133,12 @@
 <div id="swift-password-strength" class="password-strength" hidden>
   Password strength: —
 </div>
+<div id="swift-password-requirements" class="password-requirements">
+  <div id="req-length">✗ At least 8 characters</div>
+  <div id="req-upper">✗ One uppercase letter</div>
+  <div id="req-lower">✗ One lowercase letter</div>
+  <div id="req-number">✗ One number</div>
+</div>
 <button class="switch" id="swift-toggle-password" type="button">
   Show password
 </button>
@@ -147,7 +163,17 @@
   const $ = id => root.querySelector("#" + id);
   const passwordInput = $("swift-password");
 const strengthDisplay = $("swift-password-strength");
+const requirements = {
+  length: $("req-length"),
+  upper: $("req-upper"),
+  lower: $("req-lower"),
+  number: $("req-number")
+};
 
+function updateRequirement(element, passed, label) {
+  element.textContent = (passed ? "✓ " : "✗ ") + label;
+  element.classList.toggle("met", passed);
+}
 passwordInput.addEventListener("input", () => {
   if (mode !== "signup") {
     strengthDisplay.hidden = true;
@@ -155,6 +181,15 @@ passwordInput.addEventListener("input", () => {
   }
 
   const password = passwordInput.value;
+  const hasLength = password.length >= 8;
+const hasUpper = /[A-Z]/.test(password);
+const hasLower = /[a-z]/.test(password);
+const hasNumber = /[0-9]/.test(password);
+
+updateRequirement(requirements.length, hasLength, "At least 8 characters");
+updateRequirement(requirements.upper, hasUpper, "One uppercase letter");
+updateRequirement(requirements.lower, hasLower, "One lowercase letter");
+updateRequirement(requirements.number, hasNumber, "One number");
   let score = 0;
 
   if (password.length >= 8) score++;
@@ -224,6 +259,7 @@ passwordInput.addEventListener("input", () => {
   };
   function setMode(next) {
     mode = next;
+    $("swift-password-requirements").hidden = mode !== "signup";
     $("swift-password-strength").hidden = mode !== "signup";
 $("swift-password-strength").textContent = "Password strength: —";
 $("swift-password-strength").className = "password-strength";
