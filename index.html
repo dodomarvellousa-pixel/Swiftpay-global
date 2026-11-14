@@ -979,7 +979,67 @@ function cancelDemoTravel(reference) {
   renderDemoTravelReservations();
   toast('Demo reservation cancelled.');
 }
-function viewTravelReceipt(reference) {
+function viewTravelReceipt(reference)
+function printTravelReceipt() {
+  const receipt = document.getElementById('travelReceipt');
+
+  if (!receipt || receipt.style.display === 'none') {
+    toast('Open a travel receipt first.');
+    return;
+  }
+
+  const printWindow = window.open('', '_blank');
+
+  if (!printWindow) {
+    toast('Allow pop-ups to print your receipt.');
+    return;
+  }
+
+  printWindow.document.write(`
+    <!doctype html>
+    <html>
+    <head>
+      <title>SwiftPay Travel Receipt</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 25px;
+          color: #102b54;
+        }
+        .receipt {
+          max-width: 600px;
+          margin: auto;
+          border: 1px solid #ddd;
+          padding: 25px;
+          border-radius: 12px;
+        }
+        button {
+          padding: 12px 20px;
+          background: #102b54;
+          color: white;
+          border: 0;
+          border-radius: 6px;
+        }
+        @media print {
+          button { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt">
+        ${receipt.innerHTML}
+      </div>
+      <script>
+        window.onload = function() {
+          window.print();
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+ }{
   const reservation = travelReservations.find(
     r => r.reference === reference
   );
