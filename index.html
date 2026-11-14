@@ -737,6 +737,46 @@ function removeShopFromCart(id) {
   shopCartItems = shopCartItems.filter(item => item.id !== id);
   renderShopCart();
 }
+ 
+const demoHotels = [
+  {id:1, name:'Grand Luxury Hotel', city:'Lagos', price:85000, rating:5},
+  {id:2, name:'Warri Royal Suites', city:'Warri', price:45000, rating:4},
+  {id:3, name:'Abuja Comfort Hotel', city:'Abuja', price:65000, rating:4},
+  {id:4, name:'Port Harcourt Palace', city:'Port Harcourt', price:55000, rating:4},
+  {id:5, name:'Delta Garden Hotel', city:'Asaba', price:40000, rating:3}
+];
+
+function searchDemoHotels() {
+  const destination = document.getElementById('hotelDestination')
+    .value.toLowerCase().trim();
+
+  const container = document.getElementById('hotelResults');
+
+  if (!destination) {
+    toast('Enter a destination first.');
+    return;
+  }
+
+  const results = demoHotels.filter(h =>
+    h.city.toLowerCase().includes(destination)
+  );
+
+  if (!results.length) {
+    container.innerHTML = '<p>No demo hotels found in this destination.</p>';
+    return;
+  }
+
+  container.innerHTML = results.map(h => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(h.name)}</strong>
+        <small>${escapeHtml(h.city)} · ${h.rating} Star</small>
+        <strong>${fmt(h.price, 'NGN')} per night</strong>
+      </div>
+    </div>
+  `).join('');
+ }
+ 
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
 function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
 function resetDemo(){
