@@ -979,7 +979,45 @@ function cancelDemoTravel(reference) {
   renderDemoTravelReservations();
   toast('Demo reservation cancelled.');
 }
+function viewTravelReceipt(reference) {
+  const reservation = travelReservations.find(
+    r => r.reference === reference
+  );
 
+  if (!reservation) {
+    toast('Travel reservation not found.');
+    return;
+  }
+
+  const container = document.getElementById('travelReceipt');
+
+  container.style.display = 'block';
+
+  container.innerHTML = `
+    <h2>SwiftPay Global</h2>
+    <h3>Travel Booking Receipt</h3>
+
+    <p><strong>Reference:</strong> ${escapeHtml(reservation.reference)}</p>
+    <p><strong>Service:</strong> ${escapeHtml(reservation.service)}</p>
+    <p><strong>Travel Type:</strong> ${escapeHtml(reservation.type)}</p>
+    <p><strong>Departure:</strong> ${escapeHtml(reservation.from)}</p>
+    <p><strong>Destination:</strong> ${escapeHtml(reservation.to)}</p>
+    <p><strong>Travel Date:</strong> ${escapeHtml(reservation.date)}</p>
+    <p><strong>Passengers:</strong> ${reservation.passengers}</p>
+    <p><strong>Total:</strong> ${fmt(reservation.total, 'NGN')}</p>
+    <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
+
+    <p class="notice">
+      Demo receipt only. No real ticket or payment was issued.
+    </p>
+
+    <button class="action" onclick="printTravelReceipt()">
+      Print Receipt
+    </button>
+  `;
+
+  container.scrollIntoView({behavior:'smooth', block:'start'});
+}
 
 renderDemoTravelReservations();
 const demoHotels = [
