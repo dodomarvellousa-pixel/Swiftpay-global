@@ -606,7 +606,7 @@ function showShopProducts() {
   const search = document.getElementById('shopSearch').value.toLowerCase().trim();
   const category = document.getElementById('shopCategory').value;
 
-  const filtered =const shopProducts = [ shopProducts.filter(p =>
+  const filtered = shopProducts.filter(p =>
     (category === 'All' || p.category === category) &&
     p.name.toLowerCase().includes(search)
   );
