@@ -471,7 +471,7 @@ function sendDemo(){
 
   saveDemoWallet();
   render();
-
+ 
   document.getElementById('recipient').value = '';
   document.getElementById('recipientId').value = '';
   document.getElementById('sendAmount').value = '';
@@ -710,9 +710,10 @@ function resetDemo(){
 document.getElementById('displayCurrency').addEventListener('change',render);
 ['fxAmount','fxFrom','fxTo'].forEach(id=>document.getElementById(id).addEventListener('input',calculateFx));
 render();
+showShopProducts();
+renderShopCart();
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-
 </script>
 
 <script src="./swiftpay-auth.js?v=4"></script>
