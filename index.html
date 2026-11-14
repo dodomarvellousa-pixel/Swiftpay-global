@@ -940,6 +940,11 @@ function renderDemoTravelReservations() {
         <small>Reference: ${escapeHtml(r.reference)}</small>
         <strong>${fmt(r.total, 'NGN')}</strong>
         <small>${escapeHtml(r.status)}</small>
+
+        <button class="action" onclick="viewTravelReceipt('${escapeHtml(r.reference)}')">
+          View Receipt
+        </button>
+
         ${r.status !== 'Cancelled' ? `
           <button class="action" onclick="cancelDemoTravel('${escapeHtml(r.reference)}')">
             Cancel Reservation
