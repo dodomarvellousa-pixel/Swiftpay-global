@@ -324,6 +324,70 @@ body.balances-hidden #crypto .panel .positive {
   </div>
 </section>
  
+<section id="travel" class="page">
+  <h1 class="page-title">Travel Bookings</h1>
+  <p class="page-intro">Explore journeys and plan your next trip.</p>
+
+  <div class="panel">
+    <div class="field">
+      <label>Travel service</label>
+      <select id="travelType">
+        <option value="Flight">✈️ Flight</option>
+        <option value="Taxi">🚕 Taxi</option>
+        <option value="Train">🚆 Train</option>
+        <option value="Ship">🚢 Ship / Ferry</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Departure location</label>
+      <input id="travelFrom" type="text"
+        placeholder="Enter departure location">
+    </div>
+
+    <div class="field">
+      <label>Destination</label>
+      <input id="travelTo" type="text"
+        placeholder="Enter destination">
+    </div>
+
+    <div class="field">
+      <label>Travel date</label>
+      <input id="travelDate" type="date">
+    </div>
+
+    <div class="field">
+      <label>Passengers</label>
+      <select id="travelPassengers">
+        <option value="1">1 Passenger</option>
+        <option value="2">2 Passengers</option>
+        <option value="3">3 Passengers</option>
+        <option value="4">4 Passengers</option>
+        <option value="5">5 Passengers</option>
+      </select>
+    </div>
+
+    <button class="primary" onclick="searchDemoTravel()">
+      Search Travel Options
+    </button>
+  </div>
+
+  <h2>Available Travel Options</h2>
+  <div id="travelResults" class="panel">
+    <p>Enter your journey details to search demo options.</p>
+  </div>
+
+  <h2>My Travel Reservations</h2>
+  <div id="travelReservations" class="panel">
+    <p>No demo reservations yet.</p>
+  </div>
+
+  <div class="notice">
+    Demo travel services only. No real tickets, rides or bookings are issued.
+  </div>
+</section>
+ 
+ 
 <section id="profile" class="page">
  <h1 class="page-title">Profile & settings</h1><p class="page-intro">Prototype account preferences.</p>
  <div class="panel">
