@@ -213,6 +213,21 @@ body.balances-hidden #crypto .panel .positive {
 <section id="activity" class="page">
  <h1 class="page-title">Activity</h1><p class="page-intro">Your simulated transaction history.</p><div class="panel" id="allActivity"></div>
 </section>
+ <section id="receipt" class="page">
+ <h1 class="page-title">Transaction Receipt</h1>
+ <p class="page-intro">Your SwiftPay transaction record.</p>
+
+ <div class="panel" id="receiptContent">
+  <p>Select a transaction to view its receipt.</p>
+ </div>
+
+ <button class="primary" onclick="window.print()">Print Receipt</button>
+ <button class="action" onclick="showPage('activity')">Back to Activity</button>
+
+ <div class="notice">
+  Demo receipt only. This is not proof of a real payment.
+ </div>
+ </section>
 <section id="profile" class="page">
  <h1 class="page-title">Profile & settings</h1><p class="page-intro">Prototype account preferences.</p>
  <div class="panel">
@@ -298,7 +313,31 @@ function toggleBalances() {
   );
 }
  function usdTotal(){return Object.entries(balances).reduce((s,[c,v])=>s+v/rates[c],0)}
-function render(){
+function ensureTransactionReceiptData() {
+  let changed = false;
+
+  txs.forEach(t => {
+    if (!t.id) {
+      t.id = 'SWP-' + Date.now().toString(36).toUpperCase() +
+        '-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+      changed = true;
+    }
+
+    if (!t.createdAt) {
+      t.createdAt = new Date().toISOString();
+      changed = true;
+    }
+
+    if (!t.status) {
+      t.status = 'Demo successful';
+      changed = true;
+    }
+  });
+
+  if (changed) saveDemoWallet();
+}
+ function render(){
+   ensureTransactionReceiptData();
  const cur=document.getElementById('displayCurrency').value;
  document.getElementById('totalBalance').textContent=fmt(usdTotal()*rates[cur],cur);
  const rows=Object.entries(balances).map(([c,v])=>`<div class="tx"><div class="coin">${c==='NGN'?'₦':c==='EUR'?'€':c==='GBP'?'£':c==='CAD'?'C$':'$'}</div><div class="txmain"><strong>${c}</strong><small>${({USD:'US Dollar',EUR:'Euro',GBP:'British Pound',NGN:'Nigerian Naira',CAD:'Canadian Dollar'})[c]}</small></div><div class="asset-value">${fmt(v,c)}</div></div>`).join('');
@@ -307,11 +346,56 @@ function render(){
  const cr=crypto.map(x=>`<div class="tx"><div class="coin">${x[0]}</div><div class="txmain"><strong>${x[1]}</strong><small>${x[2]}</small></div><div class="asset-value">${x[3]}</div></div>`).join('');
  document.getElementById('cryptoPreview').innerHTML=cr;
  document.getElementById('cryptoList').innerHTML=cr;
- const txhtml=txs.map(t=>`<div class="tx"><div class="txicon">${t.icon}</div><div class="txmain"><strong>${escapeHtml(t.name)}</strong><small>${escapeHtml(t.detail)}</small><span class="pill">Simulated</span></div><div class="txamt ${t.amount<0?'':'positive'}">${t.amount<0?'−':'+'}${fmt(Math.abs(t.amount),t.currency)}</div></div>`).join('');
+  const txhtml=txs.map(t=>`
+  <div class="tx">
+   <div class="txicon">${escapeHtml(t.icon || '💳')}</div>
+   <div class="txmain">
+    <strong>${escapeHtml(t.name)}</strong>
+    <small>${escapeHtml(t.detail)}</small>
+    <span class="pill">Simulated</span>
+    <button class="action" onclick="viewReceipt('${t.id}')">View Receipt</button>
+   </div>
+   <div class="txamt ${t.amount<0?'':'positive'}">
+    ${t.amount<0?'−':'+'}${fmt(Math.abs(t.amount),t.currency)}
+   </div>
+  </div>
+ `).join('');
  document.getElementById('recentList').innerHTML=txhtml;
  document.getElementById('allActivity').innerHTML=txhtml;
  calculateFx();
 }
+ function viewReceipt(id) {
+  const t = txs.find(item => item.id === id);
+
+  if (!t) {
+    toast('Receipt not found.');
+    return;
+  }
+
+  const date = new Date(t.createdAt);
+  const receiptDate = isNaN(date.getTime())
+    ? 'Date unavailable'
+    : date.toLocaleString();
+
+  document.getElementById('receiptContent').innerHTML = `
+    <div class="receipt-details">
+      <h2>SwiftPay Global</h2>
+      <h3>Transaction Receipt</h3>
+      <p><strong>Reference:</strong> ${escapeHtml(t.id)}</p>
+      <p><strong>Transaction:</strong> ${escapeHtml(t.name)}</p>
+      <p><strong>Description:</strong> ${escapeHtml(t.detail)}</p>
+      <p><strong>Amount:</strong> ${fmt(Math.abs(t.amount), t.currency)}</p>
+      <p><strong>Date:</strong> ${escapeHtml(receiptDate)}</p>
+      <p><strong>Status:</strong> ${escapeHtml(t.status)}</p>
+      <p><strong>Type:</strong> Simulated transaction</p>
+      <hr>
+      <p>Thank you for using SwiftPay Global.</p>
+      <p>This is a demo receipt, not proof of a real payment.</p>
+    </div>
+  `;
+
+  showPage('receipt');
+ }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo(0,0)}
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
@@ -430,7 +514,8 @@ function buyAirtimeDemo() {
 
   txs.unshift({
     name: provider + ' ' + type,
-    detail: 'Demo bill · ' + customer,
+    detail: 'Demo bill · 
+     ' + customer,
     amount: -amount,
     currency: 'NGN',
     icon: '🧾'
