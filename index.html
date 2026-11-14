@@ -712,6 +712,9 @@ document.getElementById('displayCurrency').addEventListener('change',render);
 render();
 showShopProducts();
 renderShopCart();
+  window.showShopProducts = showShopProducts;
+window.addShopToCart = addShopToCart;
+window.removeShopFromCart = removeShopFromCart;
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
