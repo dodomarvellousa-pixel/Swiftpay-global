@@ -271,6 +271,59 @@ body.balances-hidden #crypto .panel .positive {
     Demo marketplace only. No real purchases or payments.
   </div>
  </section>
+ 
+<section id="hotels" class="page">
+  <h1 class="page-title">Hotel Bookings</h1>
+  <p class="page-intro">Discover hotels and plan your stay.</p>
+
+  <div class="panel">
+    <div class="field">
+      <label>Destination</label>
+      <input id="hotelDestination" type="text"
+        placeholder="Enter city or destination">
+    </div>
+
+    <div class="field">
+      <label>Check-in date</label>
+      <input id="hotelCheckin" type="date">
+    </div>
+
+    <div class="field">
+      <label>Check-out date</label>
+      <input id="hotelCheckout" type="date">
+    </div>
+
+    <div class="field">
+      <label>Number of guests</label>
+      <select id="hotelGuests">
+        <option value="1">1 Guest</option>
+        <option value="2" selected>2 Guests</option>
+        <option value="3">3 Guests</option>
+        <option value="4">4 Guests</option>
+        <option value="5">5 Guests</option>
+      </select>
+    </div>
+
+    <button class="primary" onclick="searchDemoHotels()">
+      Search Hotels
+    </button>
+  </div>
+
+  <h2>Available Demo Hotels</h2>
+  <div id="hotelResults" class="panel">
+    <p>Enter your destination to explore demo hotels.</p>
+  </div>
+
+  <h2>My Hotel Reservations</h2>
+  <div id="hotelReservations" class="panel">
+    <p>No demo reservations yet.</p>
+  </div>
+
+  <div class="notice">
+    Demo hotel listings only. Reservations are simulated and are not real bookings.
+  </div>
+</section>
+ 
 <section id="profile" class="page">
  <h1 class="page-title">Profile & settings</h1><p class="page-intro">Prototype account preferences.</p>
  <div class="panel">
