@@ -655,7 +655,8 @@ function addShopToCart(id) {
 function renderShopCart() {
  alert('Cart display function is running');
   const container = document.getElementById('shopCart');
-alert(container ? 'Cart container found' : 'Cart container missing');
+alert('Cart items: ' + shopCartItems.length);
+ alert(container ? 'Cart container found' : 'Cart container missing');
   if (!shopCartItems.length) {
     container.innerHTML = '<p>Your shopping cart is empty.</p>';
     return;
