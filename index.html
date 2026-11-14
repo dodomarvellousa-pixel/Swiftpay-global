@@ -940,6 +940,58 @@ function renderDemoTravelReservations() {
         <small>Reference: ${escapeHtml(r.reference)}</small>
         <strong>${fmt(r.total, 'NGN')}</strong>
         <small>${escapeHtml(r.status)}</small>
+        ${r.status !== 'Cancelled' ? `
+          <button class="action" onclick="cancelDemoTravel('${escapeHtml(r.reference)}')">
+            Cancel Reservation
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function cancelDemoTravel(reference) {
+  const reservation = travelReservations.find(
+    r => r.reference === reference
+  );
+
+  if (!reservation || reservation.status === 'Cancelled') {
+    toast('Reservation not found or already cancelled.');
+    return;
+  }
+
+  if (!confirm('Are you sure you want to cancel this demo reservation?')) {
+    return;
+  }
+
+  reservation.status = 'Cancelled';
+
+  localStorage.setItem(
+    'swiftpay_demo_travel_reservations_v1',
+    JSON.stringify(travelReservations)
+  );
+
+  renderDemoTravelReservations();
+  toast('Demo reservation cancelled.');
+} {
+  const container = document.getElementById('travelReservations');
+
+  if (!travelReservations.length) {
+    container.innerHTML = '<p>No demo reservations yet.</p>';
+    return;
+  }
+
+  container.innerHTML = travelReservations.map(r => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(r.service)}</strong>
+        <small>${escapeHtml(r.type)}</small>
+        <small>${escapeHtml(r.from)} → ${escapeHtml(r.to)}</small>
+        <small>Travel date: ${escapeHtml(r.date)}</small>
+        <small>${r.passengers} Passenger(s)</small>
+        <small>Reference: ${escapeHtml(r.reference)}</small>
+        <strong>${fmt(r.total, 'NGN')}</strong>
+        <small>${escapeHtml(r.status)}</small>
       </div>
     </div>
   `).join('');
