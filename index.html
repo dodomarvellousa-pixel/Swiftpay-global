@@ -58,6 +58,9 @@ body.balances-hidden #crypto .panel .positive {
   <button class="action" onclick="showPage('receive')"><span class="ico">↙</span>Receive</button>
   <button class="action" onclick="showPage('exchange')"><span class="ico">⇄</span>Exchange</button>
   <button class="action" onclick="showPage('crypto')"><span class="ico">₿</span>Crypto</button>
+   <button class="action" onclick="showPage('airtime')"><span class="ico">📱</span>Buy Airtime</button>
+  <button class="action" onclick="showPage('data')"><span class="ico">🌐</span>Buy Data</button>
+  <button class="action" onclick="showPage('bills')"><span class="ico">🧾</span>Pay Bills</button>
  </div>
  <div class="dashboard-grid">
  <div>
@@ -90,6 +93,98 @@ body.balances-hidden #crypto .panel .positive {
  </div>
  <div class="notice">No money is sent. Do not enter real bank details, card information, passwords or OTPs.</div>
 </section>
+
+ 
+<section id="data" class="page">
+ <h1 class="page-title">Buy Data</h1>
+ <p class="page-intro">Choose a simulated mobile data bundle.</p>
+ <div class="panel">
+  <div class="field">
+   <label>Mobile network</label>
+   <select id="dataNetwork">
+    <option value="MTN">MTN</option>
+    <option value="Airtel">Airtel</option>
+    <option value="Glo">Glo</option>
+    <option value="9mobile">9mobile</option>
+   </select>
+  </div>
+  <div class="field">
+   <label>Phone number</label>
+   <input id="dataPhone" type="tel" placeholder="Enter mobile number">
+  </div>
+  <div class="field">
+   <label>Data bundle</label>
+   <select id="dataBundle">
+    <option value="500">500 MB — ₦500</option>
+    <option value="1000">1 GB — ₦1,000</option>
+    <option value="2000">2 GB — ₦2,000</option>
+    <option value="5000">5 GB — ₦5,000</option>
+   </select>
+  </div>
+  <button class="primary" onclick="buyDataDemo()">Continue</button>
+ </div>
+ <div class="notice">Demo only. No real data bundle is purchased.</div>
+</section>
+
+ <section id="bills" class="page">
+ <h1 class="page-title">Pay Bills</h1>
+ <p class="page-intro">Record a simulated bill payment.</p>
+ <div class="panel">
+  <div class="field">
+   <label>Bill type</label>
+   <select id="billType">
+    <option value="Electricity">Electricity</option>
+    <option value="Cable TV">Cable TV</option>
+    <option value="Internet">Internet</option>
+   </select>
+  </div>
+  <div class="field">
+   <label>Provider</label>
+   <select id="billProvider">
+    <option value="BEDC">BEDC Electricity</option>
+    <option value="DSTV">DStv</option>
+    <option value="GOtv">GOtv</option>
+    <option value="StarTimes">StarTimes</option>
+   </select>
+  </div>
+  <div class="field">
+   <label>Meter or customer number</label>
+   <input id="billCustomer" type="text" placeholder="Enter customer number">
+  </div>
+  <div class="field">
+   <label>Amount (NGN)</label>
+   <input id="billAmount" type="number" min="100" placeholder="e.g. 2000">
+  </div>
+  <button class="primary" onclick="payBillDemo()">Continue</button>
+ </div>
+ <div class="notice">Demo only. No real bill is paid.</div>
+ </section>
+<section id="airtime" class="page">
+ <h1 class="page-title">Buy Airtime</h1>
+ <p class="page-intro">Purchase simulated mobile airtime.</p>
+ <div class="panel">
+  <div class="field">
+   <label>Mobile network</label>
+   <select id="airtimeNetwork">
+    <option value="MTN">MTN</option>
+    <option value="Airtel">Airtel</option>
+    <option value="Glo">Glo</option>
+    <option value="9mobile">9mobile</option>
+   </select>
+  </div>
+  <div class="field">
+   <label>Phone number</label>
+   <input id="airtimePhone" type="tel" placeholder="Enter mobile number">
+  </div>
+  <div class="field">
+   <label>Amount (NGN)</label>
+   <input id="airtimeAmount" type="number" min="50" step="50" placeholder="e.g. 500">
+  </div>
+  <button class="primary" onclick="buyAirtimeDemo()">Continue</button>
+ </div>
+ <div class="notice">Demo only. No airtime is purchased and no real payment is made.</div>
+</section>
+ 
 <section id="receive" class="page">
  <h1 class="page-title">Receive money</h1><p class="page-intro">Share your sample account details with another tester.</p>
  <div class="panel">
@@ -235,6 +330,121 @@ txs.unshift({
 saveDemoWallet();
 render();toast('Demo transfer recorded — no money moved.');document.getElementById('recipient').value='';document.getElementById('recipientId').value='';document.getElementById('sendAmount').value='';showPage('activity');
 }
+ 
+function buyAirtimeDemo() {
+  const network = document.getElementById('airtimeNetwork').value;
+  const phone = document.getElementById('airtimePhone').value.trim();
+  const amount = Number(document.getElementById('airtimeAmount').value);
+
+  if (!/^(?:\+?234|0)?[0-9]{10,11}$/.test(phone)) {
+    toast('Enter a valid phone number.');
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount < 50) {
+    toast('Minimum demo airtime is ₦50.');
+    return;
+  }
+
+  if (amount > balances.NGN) {
+    toast('Insufficient demo NGN balance.');
+    return;
+  }
+
+  balances.NGN -= amount;
+
+  txs.unshift({
+    name: network + ' Airtime',
+    detail: 'Demo purchase · ' + phone,
+    amount: -amount,
+    currency: 'NGN',
+    icon: '📱'
+  });
+
+  saveDemoWallet();
+  render();
+
+  document.getElementById('airtimePhone').value = '';
+  document.getElementById('airtimeAmount').value = '';
+
+  toast('Demo airtime recorded — no real airtime purchased.');
+  showPage('activity');
+}
+ function buyDataDemo() {
+  const network = document.getElementById('dataNetwork').value;
+  const phone = document.getElementById('dataPhone').value.trim();
+  const bundle = document.getElementById('dataBundle');
+  const amount = Number(bundle.value);
+  const label = bundle.options[bundle.selectedIndex].text;
+
+  if (!/^(?:\+?234|0)?[0-9]{10,11}$/.test(phone)) {
+    toast('Enter a valid phone number.');
+    return;
+  }
+
+  if (amount > balances.NGN) {
+    toast('Insufficient demo NGN balance.');
+    return;
+  }
+
+  balances.NGN -= amount;
+
+  txs.unshift({
+    name: network + ' Data',
+    detail: label + ' · ' + phone,
+    amount: -amount,
+    currency: 'NGN',
+    icon: '🌐'
+  });
+
+  saveDemoWallet();
+  render();
+
+  document.getElementById('dataPhone').value = '';
+
+  toast('Demo data purchase recorded — no real data purchased.');
+  showPage('activity');
+     }
+ function payBillDemo() {
+  const type = document.getElementById('billType').value;
+  const provider = document.getElementById('billProvider').value;
+  const customer = document.getElementById('billCustomer').value.trim();
+  const amount = Number(document.getElementById('billAmount').value);
+
+  if (!customer) {
+    toast('Enter a meter or customer number.');
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount < 100) {
+    toast('Minimum demo bill payment is ₦100.');
+    return;
+  }
+
+  if (amount > balances.NGN) {
+    toast('Insufficient demo NGN balance.');
+    return;
+  }
+
+  balances.NGN -= amount;
+
+  txs.unshift({
+    name: provider + ' ' + type,
+    detail: 'Demo bill · ' + customer,
+    amount: -amount,
+    currency: 'NGN',
+    icon: '🧾'
+  });
+
+  saveDemoWallet();
+  render();
+
+  document.getElementById('billCustomer').value = '';
+  document.getElementById('billAmount').value = '';
+
+  toast('Demo bill payment recorded — no real bill paid.');
+  showPage('activity');
+ }
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
 function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
 function resetDemo(){
