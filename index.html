@@ -648,7 +648,7 @@ function addShopToCart(id) {
     shopCartItems.push({...product, quantity:1});
    alert('Product added to cart list');
   }
-
+alert('Items in cart before display: ' + shopCartItems.length);
   renderShopCart();
   toast('Product added to demo cart.');
 }
