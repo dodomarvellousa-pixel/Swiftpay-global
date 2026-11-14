@@ -634,7 +634,7 @@ function showShopProducts() {
 }
 
 function addShopToCart(id) {
-  const product = shopProducts.find(p => p.id === id);
+  const product = shopProducts.find(p => p.id === Number(id));
   if (!product) return;
 
   const existing = shopCartItems.find(p => p.id === id);
