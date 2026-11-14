@@ -847,7 +847,103 @@ function searchDemoHotels() {
   `).join('');
 }
 
- 
+ let hotelReservations = [];
+
+try {
+  const savedHotels = localStorage.getItem('swiftpay_demo_hotel_reservations_v1');
+  hotelReservations = savedHotels ? JSON.parse(savedHotels) : [];
+
+  if (!Array.isArray(hotelReservations)) {
+    hotelReservations = [];
+  }
+} catch (error) {
+  hotelReservations = [];
+}
+
+function reserveDemoHotel(id) {
+  const hotel = demoHotels.find(h => h.id === id);
+
+  if (!hotel) {
+    toast('Hotel not found.');
+    return;
+  }
+
+  const checkin = document.getElementById('hotelCheckin').value;
+  const checkout = document.getElementById('hotelCheckout').value;
+  const guests = Number(document.getElementById('hotelGuests').value);
+
+  if (!checkin || !checkout) {
+    toast('Enter check-in and check-out dates.');
+    return;
+  }
+
+  const today = new Date();
+  const todayString = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+
+  if (checkin < todayString) {
+    toast('Check-in date cannot be in the past.');
+    return;
+  }
+
+  const start = new Date(checkin + 'T00:00:00');
+  const end = new Date(checkout + 'T00:00:00');
+  const nights = Math.round((end - start) / 86400000);
+
+  if (nights <= 0) {
+    toast('Check-out must be after check-in.');
+    return;
+  }
+
+  const reservation = {
+    reference: 'SPH-' + Date.now(),
+    hotel: hotel.name,
+    city: hotel.city,
+    checkin,
+    checkout,
+    guests,
+    nights,
+    total: hotel.price * nights,
+    status: 'Demo Reservation'
+  };
+
+  hotelReservations.unshift(reservation);
+
+  localStorage.setItem(
+    'swiftpay_demo_hotel_reservations_v1',
+    JSON.stringify(hotelReservations)
+  );
+
+  renderDemoHotelReservations();
+  toast('Demo hotel reservation saved.');
+}
+
+function renderDemoHotelReservations() {
+  const container = document.getElementById('hotelReservations');
+
+  if (!hotelReservations.length) {
+    container.innerHTML = '<p>No demo reservations yet.</p>';
+    return;
+  }
+
+  container.innerHTML = hotelReservations.map(r => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(r.hotel)}</strong>
+        <small>${escapeHtml(r.city)}</small>
+        <small>Reference: ${escapeHtml(r.reference)}</small>
+        <small>Check-in: ${escapeHtml(r.checkin)}</small>
+        <small>Check-out: ${escapeHtml(r.checkout)}</small>
+        <small>${r.guests} Guest(s) · ${r.nights} Night(s)</small>
+        <strong>${fmt(r.total, 'NGN')}</strong>
+        <small>${escapeHtml(r.status)}</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderDemoHotelReservations();
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
 function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
 function resetDemo(){
