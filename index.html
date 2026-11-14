@@ -634,6 +634,7 @@ function showShopProducts() {
 }
 
 function addShopToCart(id) {
+   alert('Add to Cart function is running');
   const product = shopProducts.find(p => p.id === Number(id));
   if (!product) return;
 
