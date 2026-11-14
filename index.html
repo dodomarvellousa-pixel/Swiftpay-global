@@ -856,6 +856,96 @@ function searchDemoTravel() {
     </div>
   `).join('');
    }
+ let travelReservations = [];
+
+try {
+  const savedTravel = localStorage.getItem('swiftpay_demo_travel_reservations_v1');
+  travelReservations = savedTravel ? JSON.parse(savedTravel) : [];
+  if (!Array.isArray(travelReservations)) {
+    travelReservations = [];
+  }
+} catch (error) {
+  travelReservations = [];
+}
+
+function bookDemoTravel(index) {
+  const type = document.getElementById('travelType').value;
+  const options = demoTravelOptions[type];
+  const option = options && options[index];
+
+  const from = document.getElementById('travelFrom').value.trim();
+  const to = document.getElementById('travelTo').value.trim();
+  const date = document.getElementById('travelDate').value;
+  const passengers = Number(document.getElementById('travelPassengers').value);
+
+  if (!option || !from || !to || !date) {
+    toast('Please complete your travel details and search again.');
+    return;
+  }
+
+  const today = new Date();
+  const todayString = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+
+  if (date < todayString) {
+    toast('Travel date cannot be in the past.');
+    return;
+  }
+
+  if (from.toLowerCase() === to.toLowerCase()) {
+    toast('Departure and destination must be different.');
+    return;
+  }
+
+  const reservation = {
+    reference: 'SPT-' + Date.now(),
+    type,
+    service: option.name,
+    from,
+    to,
+    date,
+    passengers,
+    total: option.price * passengers,
+    status: 'Demo Reservation'
+  };
+
+  travelReservations.unshift(reservation);
+
+  localStorage.setItem(
+    'swiftpay_demo_travel_reservations_v1',
+    JSON.stringify(travelReservations)
+  );
+
+  renderDemoTravelReservations();
+  toast('Demo travel reservation saved.');
+}
+
+function renderDemoTravelReservations() {
+  const container = document.getElementById('travelReservations');
+
+  if (!travelReservations.length) {
+    container.innerHTML = '<p>No demo reservations yet.</p>';
+    return;
+  }
+
+  container.innerHTML = travelReservations.map(r => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(r.service)}</strong>
+        <small>${escapeHtml(r.type)}</small>
+        <small>${escapeHtml(r.from)} → ${escapeHtml(r.to)}</small>
+        <small>Travel date: ${escapeHtml(r.date)}</small>
+        <small>${r.passengers} Passenger(s)</small>
+        <small>Reference: ${escapeHtml(r.reference)}</small>
+        <strong>${fmt(r.total, 'NGN')}</strong>
+        <small>${escapeHtml(r.status)}</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderDemoTravelReservations();
 const demoHotels = [
   {id:1, name:'Grand Luxury Hotel', city:'Lagos', price:85000, rating:5},
   {id:2, name:'Warri Royal Suites', city:'Warri', price:45000, rating:4},
