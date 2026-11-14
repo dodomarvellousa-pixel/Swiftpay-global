@@ -400,22 +400,44 @@ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo(0,0)}
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
 function sendDemo(){
- const name=document.getElementById('recipient').value.trim(),id=document.getElementById('recipientId').value.trim(),c=document.getElementById('sendCurrency').value,a=Number(document.getElementById('sendAmount').value),note=document.getElementById('sendNote').value.trim();
- if(!name||!id||!Number.isFinite(a)||a<=0){toast('Enter a recipient and a valid amount.');return}
- if(a>balances[c]){toast('Insufficient demo balance.');return}
-balances[c]-=a;
-txs.unshift({
-  name:'Transfer to '+name,
-  detail:'Demo ID '+id+(note?' · '+note:''),
-  amount:-a,
-  currency:c,
-  icon:'↗'
-});
-saveDemoWallet();
-render();toast('Demo transfer recorded — no money moved.');document.getElementById('recipient').value='';document.getElementById('recipientId').value='';document.getElementById('sendAmount').value='';showPage('activity');
+  const name = document.getElementById('recipient').value.trim();
+  const id = document.getElementById('recipientId').value.trim();
+  const c = document.getElementById('sendCurrency').value;
+  const a = Number(document.getElementById('sendAmount').value);
+  const note = document.getElementById('sendNote').value.trim();
+
+  if (!name || !id || !Number.isFinite(a) || a <= 0) {
+    toast('Enter a recipient and a valid amount.');
+    return;
+  }
+
+  if (a > balances[c]) {
+    toast('Insufficient demo balance.');
+    return;
+  }
+
+  balances[c] -= a;
+
+  txs.unshift({
+    name: 'Transfer to ' + name,
+    detail: 'Demo ID ' + id + (note ? ' · ' + note : ''),
+    amount: -a,
+    currency: c,
+    icon: '↗'
+  });
+
+  saveDemoWallet();
+  render();
+
+  document.getElementById('recipient').value = '';
+  document.getElementById('recipientId').value = '';
+  document.getElementById('sendAmount').value = '';
+  document.getElementById('sendNote').value = '';
+
+  toast('Demo transfer recorded — no money moved.');
+  showPage('activity');
 }
- 
-function buyAirtimeDemo() {
+ function buyAirtimeDemo() {
   const network = document.getElementById('airtimeNetwork').value;
   const phone = document.getElementById('airtimePhone').value.trim();
   const amount = Number(document.getElementById('airtimeAmount').value);
@@ -447,14 +469,13 @@ function buyAirtimeDemo() {
 
   saveDemoWallet();
   render();
-
   document.getElementById('airtimePhone').value = '';
   document.getElementById('airtimeAmount').value = '';
-
   toast('Demo airtime recorded — no real airtime purchased.');
   showPage('activity');
 }
- function buyDataDemo() {
+
+function buyDataDemo() {
   const network = document.getElementById('dataNetwork').value;
   const phone = document.getElementById('dataPhone').value.trim();
   const bundle = document.getElementById('dataBundle');
@@ -483,13 +504,12 @@ function buyAirtimeDemo() {
 
   saveDemoWallet();
   render();
-
   document.getElementById('dataPhone').value = '';
-
   toast('Demo data purchase recorded — no real data purchased.');
   showPage('activity');
-     }
- function payBillDemo() {
+}
+
+function payBillDemo() {
   const type = document.getElementById('billType').value;
   const provider = document.getElementById('billProvider').value;
   const customer = document.getElementById('billCustomer').value.trim();
@@ -514,8 +534,7 @@ function buyAirtimeDemo() {
 
   txs.unshift({
     name: provider + ' ' + type,
-    detail: 'Demo bill · 
-     ' + customer,
+    detail: 'Demo bill · ' + customer,
     amount: -amount,
     currency: 'NGN',
     icon: '🧾'
@@ -523,10 +542,8 @@ function buyAirtimeDemo() {
 
   saveDemoWallet();
   render();
-
   document.getElementById('billCustomer').value = '';
   document.getElementById('billAmount').value = '';
-
   toast('Demo bill payment recorded — no real bill paid.');
   showPage('activity');
  }
