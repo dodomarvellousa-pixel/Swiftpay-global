@@ -843,6 +843,57 @@ function searchDemoHotels() {
   `).join('');
  }
  
+const demoTravelOptions = {
+  Flight: [
+    {name:'SwiftPay Air Demo', price:185000},
+    {name:'Global Wings Demo', price:220000}
+  ],
+  Taxi: [
+    {name:'Standard Taxi Demo', price:8000},
+    {name:'Comfort Taxi Demo', price:12000}
+  ],
+  Train: [
+    {name:'Express Train Demo', price:12000},
+    {name:'Standard Train Demo', price:8000}
+  ],
+  Ship: [
+    {name:'Passenger Ferry Demo', price:15000},
+    {name:'Comfort Ferry Demo', price:25000}
+  ]
+};
+
+function searchDemoTravel() {
+  const type = document.getElementById('travelType').value;
+  const from = document.getElementById('travelFrom').value.trim();
+  const to = document.getElementById('travelTo').value.trim();
+  const date = document.getElementById('travelDate').value;
+  const passengers = Number(document.getElementById('travelPassengers').value);
+  const container = document.getElementById('travelResults');
+
+  if (!from || !to || !date) {
+    toast('Enter departure, destination and travel date.');
+    return;
+  }
+
+  if (from.toLowerCase() === to.toLowerCase()) {
+    toast('Departure and destination must be different.');
+    return;
+  }
+
+  const options = demoTravelOptions[type];
+
+  container.innerHTML = options.map(option => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(option.name)}</strong>
+        <small>${escapeHtml(from)} → ${escapeHtml(to)}</small>
+        <small>${escapeHtml(date)} · ${passengers} Passenger(s)</small>
+        <strong>${fmt(option.price * passengers, 'NGN')}</strong>
+      </div>
+    </div>
+  `).join('');
+   }
+ 
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
 function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
 function resetDemo(){
