@@ -639,12 +639,13 @@ function addShopToCart(id) {
  alert(product ? 'Product found: ' + product.name : 'Product not found');
   if (!product) return;
 
-  const existing = shopCartItems.find(p => p.id === id);
+  const existing = shopCartItems.find(p => p.id === Number(id));
 
   if (existing) {
     existing.quantity++;
   } else {
     shopCartItems.push({...product, quantity:1});
+   alert('Product added to cart list');
   }
 
   renderShopCart();
