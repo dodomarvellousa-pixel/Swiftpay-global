@@ -1244,6 +1244,51 @@ function viewHotelReceipt(reference) {
 
   receipt.scrollIntoView({behavior:'smooth'});
 }
+ function printHotelReceipt() {
+  const receipt = document.getElementById('hotelReceipt');
+
+  if (!receipt || !receipt.innerHTML) {
+    toast('Open a hotel receipt first.');
+    return;
+  }
+
+  const printWindow = window.open('', '_blank');
+
+  if (!printWindow) {
+    toast('Allow pop-ups to print the receipt.');
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>SwiftPay Hotel Receipt</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 25px;
+          color: #172033;
+        }
+        h2, h3 {
+          color: #102b54;
+        }
+        p {
+          margin: 12px 0;
+        }
+      </style>
+    </head>
+    <body>
+      ${receipt.innerHTML}
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+ }
 }
 
 renderDemoHotelReservations();
