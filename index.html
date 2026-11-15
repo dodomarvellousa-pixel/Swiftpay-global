@@ -1214,6 +1214,33 @@ function renderDemoHotelReservations() {
       <div class="txmain">
         <strong>${escapeHtml(r.hotel)}</strong>
         <small>${escapeHtml(r.city)}</small>
+        <small>Check-in: ${escapeHtml(r.checkin)}</small>
+        <small>Check-out: ${escapeHtml(r.checkout)}</small>
+        <small>${r.guests} Guest(s)</small>
+        <small>Reference: ${escapeHtml(r.reference)}</small>
+        <strong>${fmt(r.total, 'NGN')}</strong>
+        <small>${escapeHtml(r.status)}</small>
+
+        <button class="action"
+          onclick="viewHotelReceipt('${escapeHtml(r.reference)}')">
+          View Receipt
+        </button>
+      </div>
+    </div>
+  `).join('');
+} {
+  const container = document.getElementById('hotelReservations');
+
+  if (!hotelReservations.length) {
+    container.innerHTML = '<p>No demo reservations yet.</p>';
+    return;
+  }
+
+  container.innerHTML = hotelReservations.map(r => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(r.hotel)}</strong>
+        <small>${escapeHtml(r.city)}</small>
         <small>Reference: ${escapeHtml(r.reference)}</small>
         <small>Check-in: ${escapeHtml(r.checkin)}</small>
         <small>Check-out: ${escapeHtml(r.checkout)}</small>
