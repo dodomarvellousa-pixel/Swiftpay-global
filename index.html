@@ -1201,55 +1201,49 @@ function reserveDemoHotel(id) {
   toast('Demo hotel reservation saved.');
 }
 
-function renderDemoHotelReservations() {
-  const container = document.getElementById('hotelReservations');
+function viewHotelReceipt(reference) {
+  const reservation = hotelReservations.find(
+    r => r.reference === reference
+  );
 
-  if (!hotelReservations.length) {
-    container.innerHTML = '<p>No demo reservations yet.</p>';
+  if (!reservation) {
+    toast('Hotel receipt not found.');
     return;
   }
 
-  container.innerHTML = hotelReservations.map(r => `
-    <div class="tx">
-      <div class="txmain">
-        <strong>${escapeHtml(r.hotel)}</strong>
-        <small>${escapeHtml(r.city)}</small>
-        <small>Check-in: ${escapeHtml(r.checkin)}</small>
-        <small>Check-out: ${escapeHtml(r.checkout)}</small>
-        <small>${r.guests} Guest(s)</small>
-        <small>Reference: ${escapeHtml(r.reference)}</small>
-        <strong>${fmt(r.total, 'NGN')}</strong>
-        <small>${escapeHtml(r.status)}</small>
+  const checkin = new Date(reservation.checkin + 'T00:00:00');
+  const checkout = new Date(reservation.checkout + 'T00:00:00');
+  const nights = Math.round(
+    (checkout - checkin) / (1000 * 60 * 60 * 24)
+  );
 
-        <button class="action"
-          onclick="viewHotelReceipt('${escapeHtml(r.reference)}')">
-          View Receipt
-        </button>
-      </div>
-    </div>
-  `).join('');
-} {
-  const container = document.getElementById('hotelReservations');
+  const receipt = document.getElementById('hotelReceipt');
 
-  if (!hotelReservations.length) {
-    container.innerHTML = '<p>No demo reservations yet.</p>';
-    return;
-  }
+  receipt.style.display = 'block';
+  receipt.innerHTML = `
+    <h2>SwiftPay Global</h2>
+    <h3>Hotel Booking Receipt</h3>
+    <p><strong>Reference:</strong> ${escapeHtml(reservation.reference)}</p>
+    <p><strong>Hotel:</strong> ${escapeHtml(reservation.hotel)}</p>
+    <p><strong>Destination:</strong> ${escapeHtml(reservation.city)}</p>
+    <p><strong>Check-in:</strong> ${escapeHtml(reservation.checkin)}</p>
+    <p><strong>Check-out:</strong> ${escapeHtml(reservation.checkout)}</p>
+    <p><strong>Guests:</strong> ${reservation.guests}</p>
+    <p><strong>Nights:</strong> ${nights}</p>
+    <h3>Total: ${fmt(reservation.total, 'NGN')}</h3>
+    <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
+    <p>Demo reservation only. No real hotel booking has been made.</p>
 
-  container.innerHTML = hotelReservations.map(r => `
-    <div class="tx">
-      <div class="txmain">
-        <strong>${escapeHtml(r.hotel)}</strong>
-        <small>${escapeHtml(r.city)}</small>
-        <small>Reference: ${escapeHtml(r.reference)}</small>
-        <small>Check-in: ${escapeHtml(r.checkin)}</small>
-        <small>Check-out: ${escapeHtml(r.checkout)}</small>
-        <small>${r.guests} Guest(s) · ${r.nights} Night(s)</small>
-        <strong>${fmt(r.total, 'NGN')}</strong>
-        <small>${escapeHtml(r.status)}</small>
-      </div>
-    </div>
-  `).join('');
+    <button class="action" onclick="printHotelReceipt()">
+      Print Receipt
+    </button>
+    <button class="action" onclick="printHotelReceipt()">
+      Save as PDF
+    </button>
+  `;
+
+  receipt.scrollIntoView({behavior:'smooth'});
+}
 }
 
 renderDemoHotelReservations();
