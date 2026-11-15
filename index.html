@@ -1038,8 +1038,10 @@ function printTravelReceipt() {
     </html>
   `);
 
-  printWindow.document.close();
- }{
+    printWindow.document.close();
+}
+
+function viewTravelReceipt(reference) {
   const reservation = travelReservations.find(
     r => r.reference === reference
   );
