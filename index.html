@@ -1202,6 +1202,7 @@ function printTravelReceipt() {
     printWindow.document.close();
 }
 
+
 function viewTravelReceipt(reference) {
   const reservation = travelReservations.find(
     r => r.reference === reference
@@ -1213,6 +1214,11 @@ function viewTravelReceipt(reference) {
   }
 
   const container = document.getElementById('travelReceipt');
+
+  if (!container) {
+    toast('Travel receipt area not found.');
+    return;
+  }
 
   container.style.display = 'block';
 
@@ -1230,9 +1236,15 @@ function viewTravelReceipt(reference) {
     <p><strong>Total:</strong> ${fmt(reservation.total, 'NGN')}</p>
     <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
 
-    <p class="notice">
-      Demo receipt only. No real ticket or payment was issued.
-    </p>
+    <div class="notice">
+      <strong>DEMO VERIFICATION ONLY</strong>
+      <p>Reference: ${escapeHtml(reservation.reference)}</p>
+      <p>This is a simulated receipt. It does not confirm a real ticket, payment or booking.</p>
+      <div style="font-size:13px;letter-spacing:3px;font-weight:bold;">
+        ▦ ▣ ▤ ▦ ▣
+      </div>
+      <small>Decorative code — not scannable</small>
+    </div>
 
     <button class="action" onclick="downloadTravelReceiptImage()">
       Download Receipt as PNG
@@ -1242,13 +1254,17 @@ function viewTravelReceipt(reference) {
       Print Receipt
     </button>
 
-<button class="action" onclick="printTravelReceipt()">
-  Save as PDF
-</button>
+    <button class="action" onclick="printTravelReceipt()">
+      Save as PDF
+    </button>
   `;
 
-  container.scrollIntoView({behavior:'smooth', block:'start'});
+  container.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
 }
+
 
 renderDemoTravelReservations();
 const demoHotels = [
