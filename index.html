@@ -929,24 +929,27 @@ function showShopProducts() {
   `).join('');
 }
 
+
 function addShopToCart(id) {
-   alert('Add to Cart function is running');
   const product = shopProducts.find(p => p.id === Number(id));
- alert(product ? 'Product found: ' + product.name : 'Product not found');
-  if (!product) return;
+
+  if (!product) {
+    toast('Product not found.');
+    return;
+  }
 
   const existing = shopCartItems.find(p => p.id === Number(id));
 
   if (existing) {
     existing.quantity++;
   } else {
-    shopCartItems.push({...product, quantity:1});
-   alert('Product added to cart list');
+    shopCartItems.push({...product, quantity: 1});
   }
-alert('Items in cart before display: ' + shopCartItems.length);
+
   renderShopCart();
   toast('Product added to demo cart.');
 }
+
 
 function renderShopCart() {
   const container = document.getElementById('shopCart');
