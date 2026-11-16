@@ -1707,6 +1707,7 @@ function downloadTravelReceiptImage() {
   }, 'image/png');
    }
  
+
 function printHotelReceipt() {
   const receipt = document.getElementById('hotelReceipt');
 
@@ -1752,6 +1753,7 @@ function printHotelReceipt() {
   printWindow.focus();
   printWindow.print();
 }
+
 
 renderDemoHotelReservations();
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
