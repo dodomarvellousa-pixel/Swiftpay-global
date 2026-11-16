@@ -1209,15 +1209,79 @@ function renderShopCart() {
   `;
 }
 
-function clearShopCart() {
+function swiftPayConfirm(title, message, confirmText = 'Confirm') {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+
+    overlay.style.cssText = `
+      position:fixed;
+      inset:0;
+      background:rgba(5,18,40,.72);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:99999;
+    `;
+
+    const box = document.createElement('div');
+    box.style.cssText = `
+      width:100%;
+      max-width:360px;
+      background:#fff;
+      color:#172033;
+      border-radius:20px;
+      padding:24px;
+      box-shadow:0 15px 50px rgba(0,0,0,.25);
+      font-family:Arial,sans-serif;
+    `;
+
+    const heading = document.createElement('h3');
+    heading.textContent = title;
+    heading.style.cssText = 'margin:0 0 12px;color:#102b54;font-size:20px;';
+
+    const description = document.createElement('p');
+    description.textContent = message;
+    description.style.cssText = 'margin:0 0 24px;line-height:1.6;color:#536176;';
+
+    const buttons = document.createElement('div');
+    buttons.style.cssText = 'display:flex;gap:10px;';
+
+    const cancel = document.createElement('button');
+    cancel.textContent = 'Cancel';
+    cancel.style.cssText = 'flex:1;padding:13px;border:1px solid #dbe3ef;border-radius:10px;background:#f1f4f9;color:#26364d;font-weight:bold;';
+
+    const confirm = document.createElement('button');
+    confirm.textContent = confirmText;
+    confirm.style.cssText = 'flex:1;padding:13px;border:0;border-radius:10px;background:#102b54;color:white;font-weight:bold;';
+
+    function finish(result) {
+      overlay.remove();
+      resolve(result);
+    }
+
+    cancel.onclick = () => finish(false);
+    confirm.onclick = () => finish(true);
+
+    buttons.append(cancel, confirm);
+    box.append(heading, description, buttons);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  });
+                     }
+ async function clearShopCart() {
   if (!shopCartItems.length) {
     toast('Your shopping cart is already empty.');
     return;
   }
 
-  if (!confirm('Are you sure you want to clear all items from your demo shopping cart?')) {
-    return;
-  }
+  if (!await swiftPayConfirm(
+  'Clear Shopping Cart',
+  'Are you sure you want to remove all items from your demo shopping cart?',
+  'Clear Cart'
+)) {
+  return;
+}
 
   shopCartItems = [];
 
@@ -1442,7 +1506,7 @@ function renderDemoTravelReservations() {
   `).join('');
 }
 
-function cancelDemoTravel(reference) {
+async function cancelDemoTravel(reference) {
   const reservation = travelReservations.find(
     r => r.reference === reference
   );
@@ -1452,8 +1516,12 @@ function cancelDemoTravel(reference) {
     return;
   }
 
-  if (!confirm('Are you sure you want to cancel this demo reservation?')) {
-    return;
+  if (!await swiftPayConfirm(
+  'Cancel Travel Reservation',
+  'Are you sure you want to cancel this demo reservation?',
+  'Cancel Reservation'
+)) {
+  return;
   }
 
   reservation.status = 'Cancelled';
@@ -2070,10 +2138,14 @@ function printHotelReceipt() {
 renderDemoHotelReservations();
 function calculateFx(){const a=Number(document.getElementById('fxAmount').value)||0,f=document.getElementById('fxFrom').value,t=document.getElementById('fxTo').value;const out=a/rates[f]*rates[t];document.getElementById('fxResult').value=fmt(out,t);document.getElementById('fxRate').textContent=`Sample rate: 1 ${f} ≈ ${fmt(rates[t]/rates[f],t)} · Indicative only, not live.`}
 function copyId(){if(navigator.clipboard?.writeText){navigator.clipboard.writeText('SWP-8392-1046').then(()=>toast('Demo ID copied')).catch(()=>toast('Demo ID: SWP-8392-1046'))}else toast('Demo ID: SWP-8392-1046')}
-function resetDemo(){
-  if (!confirm('Are you sure you want to reset all demo wallet data?')) {
-    return;
-  }
+async function resetDemo(){
+if (!await swiftPayConfirm(
+  'Reset Demo Wallet',
+  'Are you sure you want to reset all demo wallet data? This will restore the original demo balances and transactions.',
+  'Reset Wallet'
+)) {
+  return;
+}
 
   balances={
     USD:12480.50,
