@@ -993,6 +993,9 @@ function showShopProducts() {
         <strong>${escapeHtml(p.name)}</strong>
         <small>${escapeHtml(p.category)}</small>
         <strong>${fmt(p.price, 'NGN')}</strong>
+       <button class="secondary" onclick="viewShopProduct(${p.id})">
+  View Details
+</button>
         <button class="action" onclick="addShopToCart(${p.id})">
           Add to Cart
         </button>
@@ -1023,7 +1026,22 @@ function addShopToCart(id) {
   renderShopCart();
   toast('Product added to demo cart.');
 }
+function viewShopProduct(id) {
+  const product = shopProducts.find(p => p.id === Number(id));
 
+  if (!product) {
+    toast('Product not found.');
+    return;
+  }
+
+  alert(
+    'PRODUCT DETAILS\n\n' +
+    'Product: ' + product.name + '\n' +
+    'Category: ' + product.category + '\n' +
+    'Price: ' + fmt(product.price, 'NGN') + '\n\n' +
+    'Demo marketplace only. No real purchases or payments.'
+  );
+ }
 
 function renderShopCart() {
   const container = document.getElementById('shopCart');
