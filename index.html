@@ -988,7 +988,8 @@ function searchDemoTravel() {
   const from = document.getElementById('travelFrom').value.trim();
   const to = document.getElementById('travelTo').value.trim();
   const date = document.getElementById('travelDate').value;
-  const passengers = Number(document.getElementById('travelPassengers').value);
+const departureTime = document.getElementById('travelDepartureTime')?.value || '';
+const passengers = Number(document.getElementById('travelPassengers').value);
   const container = document.getElementById('travelResults');
 
   if (!from || !to || !date) {
@@ -1066,6 +1067,7 @@ function bookDemoTravel(index) {
     from,
     to,
     date,
+    departureTime,
     passengers,
     total: option.price * passengers,
     status: 'Demo Reservation'
