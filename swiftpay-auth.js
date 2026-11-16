@@ -428,7 +428,7 @@ resetInactivityTimer();
     );
 
     if (profileName) {
-      profileName.textContent = account.name;
+      profileName.textContent = "Profile: " + account.name;
     }
 const profileEmail = document.createElement("p");
 profileEmail.id = "swift-profile-email";
