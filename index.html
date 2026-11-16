@@ -1112,13 +1112,18 @@ const departureTime = document.getElementById('travelDepartureTime')?.value || '
 
 function renderDemoTravelReservations() {
   const container = document.getElementById('travelReservations');
+  const filter = document.getElementById('travelHistoryFilter')?.value || 'All';
 
-  if (!travelReservations.length) {
-    container.innerHTML = '<p>No demo reservations yet.</p>';
+  const filteredReservations = travelReservations.filter(r =>
+    filter === 'All' || r.type === filter
+  );
+
+  if (!filteredReservations.length) {
+    container.innerHTML = '<p>No reservations found for this category.</p>';
     return;
   }
 
-  container.innerHTML = travelReservations.map(r => `
+  container.innerHTML = filteredReservations.map(r => `
     <div class="tx">
       <div class="txmain">
         <strong>${escapeHtml(r.service)}</strong>
