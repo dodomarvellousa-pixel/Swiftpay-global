@@ -1113,8 +1113,10 @@ function closeShopProductDetails() {
 }
 
 
+
 function renderShopCart() {
   const container = document.getElementById('shopCart');
+
   if (!shopCartItems.length) {
     container.innerHTML = '<p>Your shopping cart is empty.</p>';
     return;
@@ -1128,9 +1130,32 @@ function renderShopCart() {
     <div class="tx">
       <div class="txmain">
         <strong>${escapeHtml(item.name)}</strong>
-        <small>Quantity: ${item.quantity}</small>
+
+        <small>Unit Price: ${fmt(item.price, 'NGN')}</small>
+
+        <div style="
+          display:flex;
+          align-items:center;
+          gap:12px;
+          margin:12px 0;
+        ">
+          <button class="secondary"
+            onclick="changeShopQuantity(${item.id}, -1)">
+            −
+          </button>
+
+          <strong>${item.quantity}</strong>
+
+          <button class="secondary"
+            onclick="changeShopQuantity(${item.id}, 1)">
+            +
+          </button>
+        </div>
+
         <strong>${fmt(item.price * item.quantity, 'NGN')}</strong>
-        <button class="action" onclick="removeShopFromCart(${item.id})">
+
+        <button class="action"
+          onclick="removeShopFromCart(${item.id})">
           Remove
         </button>
       </div>
@@ -1140,10 +1165,28 @@ function renderShopCart() {
   `;
 }
 
+
 function removeShopFromCart(id) {
   shopCartItems = shopCartItems.filter(item => item.id !== id);
   renderShopCart();
+ }
+ 
+function changeShopQuantity(id, change) {
+  const item = shopCartItems.find(
+    p => p.id === Number(id)
+  );
+
+  if (!item) {
+    toast('Cart item not found.');
+    return;
+  }
+
+  item.quantity = Math.max(1, item.quantity + change);
+
+  renderShopCart();
 }
+ 
+
  const demoTravelOptions = {
   Flight: [
     {name:'SwiftPay Air Demo', price:185000},
