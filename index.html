@@ -987,6 +987,7 @@ function removeShopFromCart(id) {
 };
 
 
+
 function searchDemoTravel() {
   const type = document.getElementById('travelType').value;
   const from = document.getElementById('travelFrom').value.trim();
@@ -1001,8 +1002,12 @@ function searchDemoTravel() {
     return;
   }
 
-  if (date < new Date().toISOString().slice(0, 10)) {
-    toast('Travel date cannot be in the past.');
+  const selectedDate = new Date(date + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (isNaN(selectedDate.getTime()) || selectedDate < today) {
+    toast('Choose a valid future travel date.');
     return;
   }
 
@@ -1018,12 +1023,18 @@ function searchDemoTravel() {
     return;
   }
 
+  const displayDate = selectedDate.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
   container.innerHTML = options.map((option, index) => `
     <div class="tx">
       <div class="txmain">
         <strong>${escapeHtml(option.name)}</strong>
         <small>${escapeHtml(from)} → ${escapeHtml(to)}</small>
-        <small>${escapeHtml(date)} · ${escapeHtml(departureTime || 'Time not specified')}</small>
+        <small>${escapeHtml(displayDate)} · ${escapeHtml(departureTime || 'Time not specified')}</small>
         <small>${passengers} Passenger(s)</small>
         <strong>${fmt(option.price * passengers, 'NGN')}</strong>
         <button class="action" onclick="bookDemoTravel(${index})">
