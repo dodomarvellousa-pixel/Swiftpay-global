@@ -37,6 +37,65 @@ body.balances-hidden #crypto .panel .positive {
 .toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#14233b;color:white;padding:11px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:10;white-space:nowrap}.toast.show{opacity:1}
 @media(min-width:720px){.top{padding:26px 32px 34px}.content{padding:24px 30px}.dashboard-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}.actions{gap:14px}.action{padding:17px}.page{max-width:760px;margin:auto}}
 
+/* SwiftPay Professional Shopping Product Cards */
+#shopProducts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#shopProducts .tx {
+  display: block;
+  background: #ffffff;
+  border: 1px solid #e2e9f2;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 14px rgba(16, 43, 84, 0.06);
+}
+
+#shopProducts .txmain {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+#shopProducts .txmain > div:first-child {
+  background: #f3f6fc;
+  border-radius: 13px;
+  min-height: 105px;
+  display: grid;
+  place-items: center;
+  font-size: 48px !important;
+}
+
+#shopProducts .txmain strong {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+#shopProducts .txmain small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+#shopProducts .action {
+  width: 100%;
+  margin-top: 5px;
+  border-radius: 10px;
+  padding: 11px;
+  font-weight: 750;
+}
+
+@media(max-width:360px) {
+  #shopProducts {
+    gap: 8px;
+  }
+
+  #shopProducts .tx {
+    padding: 9px;
+  }
+}
+ 
 /* SwiftPay Professional Demo Receipt Design */
 #hotelReceipt,
 #travelReceipt {
