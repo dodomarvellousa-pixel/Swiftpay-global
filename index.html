@@ -1203,6 +1203,7 @@ function printTravelReceipt() {
 }
 
 
+
 function viewTravelReceipt(reference) {
   const reservation = travelReservations.find(
     r => r.reference === reference
@@ -1220,12 +1221,15 @@ function viewTravelReceipt(reference) {
     return;
   }
 
+  const receiptDate = new Date().toLocaleString();
+
   container.style.display = 'block';
 
   container.innerHTML = `
     <h2>SwiftPay Global</h2>
     <h3>Travel Booking Receipt</h3>
 
+    <p><strong>Receipt Generated:</strong> ${escapeHtml(receiptDate)}</p>
     <p><strong>Reference:</strong> ${escapeHtml(reservation.reference)}</p>
     <p><strong>Service:</strong> ${escapeHtml(reservation.service)}</p>
     <p><strong>Travel Type:</strong> ${escapeHtml(reservation.type)}</p>
@@ -1234,12 +1238,18 @@ function viewTravelReceipt(reference) {
     <p><strong>Travel Date:</strong> ${escapeHtml(reservation.date)}</p>
     <p><strong>Passengers:</strong> ${reservation.passengers}</p>
     <p><strong>Total:</strong> ${fmt(reservation.total, 'NGN')}</p>
-    <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
+
+    <p>
+      <strong>Status:</strong>
+      <span style="display:inline-block;background:#e8eef8;color:#102b54;padding:5px 12px;border-radius:20px;font-weight:bold;">
+        ${escapeHtml(reservation.status)}
+      </span>
+    </p>
 
     <div class="notice">
       <strong>DEMO VERIFICATION ONLY</strong>
       <p>Reference: ${escapeHtml(reservation.reference)}</p>
-      <p>This is a simulated receipt. It does not confirm a real ticket, payment or booking.</p>
+      <p>This simulated receipt does not confirm a real ticket, payment or booking.</p>
       <div style="font-size:13px;letter-spacing:3px;font-weight:bold;">
         ▦ ▣ ▤ ▦ ▣
       </div>
@@ -1257,6 +1267,11 @@ function viewTravelReceipt(reference) {
     <button class="action" onclick="printTravelReceipt()">
       Save as PDF
     </button>
+
+    <p style="text-align:center;color:#64748b;font-size:11px;border-top:1px solid #dbe3ef;margin-top:20px;padding-top:15px;">
+      SwiftPay Global · Simulated Demo Service<br>
+      No real tickets, payments or bookings issued.
+    </p>
   `;
 
   container.scrollIntoView({
@@ -1264,6 +1279,7 @@ function viewTravelReceipt(reference) {
     block: 'start'
   });
 }
+
 
 
 renderDemoTravelReservations();
