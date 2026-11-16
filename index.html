@@ -902,6 +902,7 @@ const shopProducts = [
 let shopCartItems = [];
 
 
+
 function showShopProducts() {
   const search = document.getElementById('shopSearch').value.toLowerCase().trim();
   const category = document.getElementById('shopCategory').value;
@@ -927,6 +928,9 @@ function showShopProducts() {
   container.innerHTML = filtered.map(p => `
     <div class="tx">
       <div class="txmain">
+        <div style="font-size:48px; text-align:center; padding:12px;">
+          ${p.icon || '🛍️'}
+        </div>
         <strong>${escapeHtml(p.name)}</strong>
         <small>${escapeHtml(p.category)}</small>
         <strong>${fmt(p.price, 'NGN')}</strong>
@@ -937,6 +941,7 @@ function showShopProducts() {
     </div>
   `).join('');
 }
+
 
 
 
