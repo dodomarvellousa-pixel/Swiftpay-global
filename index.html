@@ -1264,7 +1264,7 @@ function viewTravelReceipt(reference) {
     <p><strong>Departure:</strong> ${escapeHtml(reservation.from)}</p>
     <p><strong>Destination:</strong> ${escapeHtml(reservation.to)}</p>
     <p><strong>Travel Date:</strong> ${escapeHtml(reservation.date)}</p>
-    <p><strong>Flight Departure Time:</strong> ${escapeHtml(reservation.departureTime || 'Not specified')}</p>
+    <p><strong>Departure Time:</strong> ${escapeHtml(reservation.departureTime || 'Not specified')}</p>
     <p><strong>Passengers:</strong> ${reservation.passengers}</p>
     <p><strong>Total:</strong> ${fmt(reservation.total, 'NGN')}</p>
 
