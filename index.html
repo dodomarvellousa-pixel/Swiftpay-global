@@ -448,9 +448,21 @@ body.balances-hidden #crypto .panel .positive {
   </div>
 
   <h2>My Travel Reservations</h2>
-  <div id="travelReservations" class="panel">
-    <p>No demo reservations yet.</p>
-  </div>
+
+<div class="field">
+  <label>Filter reservations</label>
+  <select id="travelHistoryFilter" onchange="renderDemoTravelReservations()">
+    <option value="All">All bookings</option>
+    <option value="Flight">✈️ Flights</option>
+    <option value="Taxi">🚕 Taxis</option>
+    <option value="Train">🚆 Trains</option>
+    <option value="Ship">🚢 Ships / Ferries</option>
+  </select>
+</div>
+
+<div id="travelReservations" class="panel">
+  <p>No demo reservations yet.</p>
+</div>
 <div id="travelReceipt" class="panel" style="display:none;"></div>
   <div class="notice">
     Demo travel services only. No real tickets, rides or bookings are issued.
