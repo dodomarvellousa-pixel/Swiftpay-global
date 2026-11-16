@@ -1001,8 +1001,7 @@ const passengers = Number(document.getElementById('travelPassengers').value);
   <label>Departure time</label>
   <input id="travelDepartureTime" type="time">
 </div>
-
-  if (from.toLowerCase() === to.toLowerCase()) {
+if (from.toLowerCase() === to.toLowerCase()) {
     toast('Departure and destination must be different.');
     return;
   }
