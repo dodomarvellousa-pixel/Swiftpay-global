@@ -886,16 +886,18 @@ function payBillDemo() {
   toast('Demo bill payment recorded — no real bill paid.');
   showPage('activity');
  }
-   const shopProducts = [
-  {id:1, name:'Smartphone', category:'Phones', price:150000},
-  {id:2, name:'Wireless Headphones', category:'Electronics', price:25000},
-  {id:3, name:'Smart Watch', category:'Electronics', price:35000},
-  {id:4, name:'Men Fashion Shirt', category:'Fashion', price:12000},
-  {id:5, name:'Ladies Handbag', category:'Fashion', price:18000},
-  {id:6, name:'Home Blender', category:'Home', price:30000},
-  {id:7, name:'Beauty Care Set', category:'Beauty', price:15000},
-  {id:8, name:'Grocery Basket', category:'Groceries', price:20000}
+
+const shopProducts = [
+  {id:1, name:'Smartphone', category:'Phones', price:150000, icon:'📱'},
+  {id:2, name:'Wireless Headphones', category:'Electronics', price:25000, icon:'🎧'},
+  {id:3, name:'Smart Watch', category:'Electronics', price:35000, icon:'⌚'},
+  {id:4, name:'Men Fashion Shirt', category:'Fashion', price:12000, icon:'👕'},
+  {id:5, name:'Ladies Handbag', category:'Fashion', price:18000, icon:'👜'},
+  {id:6, name:'Home Blender', category:'Home', price:30000, icon:'🥤'},
+  {id:7, name:'Beauty Care Set', category:'Beauty', price:15000, icon:'💄'},
+  {id:8, name:'Grocery Basket', category:'Groceries', price:20000, icon:'🛒'}
 ];
+
 
 let shopCartItems = [];
 
