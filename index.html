@@ -1494,6 +1494,76 @@ function viewHotelReceipt(reference) {
   receipt.scrollIntoView({behavior:'smooth'});
 }
 
+function downloadTravelReceiptImage() {
+  const receipt = document.getElementById('travelReceipt');
+
+  if (!receipt || !receipt.innerHTML) {
+    toast('Open a travel receipt first.');
+    return;
+  }
+
+  const clone = receipt.cloneNode(true);
+
+  clone.querySelectorAll('button').forEach(button => button.remove());
+
+  const text = clone.innerText;
+  const lines = text.split('\n').filter(line => line.trim());
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const width = 700;
+  const lineHeight = 34;
+  const padding = 40;
+
+  canvas.width = width;
+  canvas.height = padding * 2 + lines.length * lineHeight + 40;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#102b54';
+  ctx.font = 'bold 32px Arial';
+  ctx.fillText('SwiftPay Global', padding, 75);
+
+  ctx.fillStyle = '#172033';
+  ctx.font = '22px Arial';
+
+  lines.forEach((line, index) => {
+    ctx.fillText(
+      line.substring(0, 55),
+      padding,
+      125 + index * lineHeight
+    );
+  });
+
+  ctx.fillStyle = '#64748b';
+  ctx.font = '16px Arial';
+  ctx.fillText(
+    'Demo receipt only — no real travel booking.',
+    padding,
+    canvas.height - 25
+  );
+
+  canvas.toBlob(blob => {
+    if (!blob) {
+      toast('Could not create receipt image.');
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `SwiftPay-Travel-Receipt-${Date.now()}.png`;
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    toast('Travel receipt image downloaded.');
+  }, 'image/png');
+   }
+ 
 function printHotelReceipt() {
   const receipt = document.getElementById('hotelReceipt');
 
