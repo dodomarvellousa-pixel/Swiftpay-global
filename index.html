@@ -1519,6 +1519,7 @@ function renderDemoHotelReservations() {
   `).join('');
  }
 
+
 function viewHotelReceipt(reference) {
   const reservation = hotelReservations.find(
     r => r.reference === reference
@@ -1531,16 +1532,24 @@ function viewHotelReceipt(reference) {
 
   const checkin = new Date(reservation.checkin + 'T00:00:00');
   const checkout = new Date(reservation.checkout + 'T00:00:00');
+
   const nights = Math.round(
     (checkout - checkin) / (1000 * 60 * 60 * 24)
   );
 
   const receipt = document.getElementById('hotelReceipt');
 
+  if (!receipt) {
+    toast('Hotel receipt area not found.');
+    return;
+  }
+
   receipt.style.display = 'block';
+
   receipt.innerHTML = `
     <h2>SwiftPay Global</h2>
     <h3>Hotel Booking Receipt</h3>
+
     <p><strong>Reference:</strong> ${escapeHtml(reservation.reference)}</p>
     <p><strong>Hotel:</strong> ${escapeHtml(reservation.hotel)}</p>
     <p><strong>Destination:</strong> ${escapeHtml(reservation.city)}</p>
@@ -1548,23 +1557,38 @@ function viewHotelReceipt(reference) {
     <p><strong>Check-out:</strong> ${escapeHtml(reservation.checkout)}</p>
     <p><strong>Guests:</strong> ${reservation.guests}</p>
     <p><strong>Nights:</strong> ${nights}</p>
-    <h3>Total: ${fmt(reservation.total, 'NGN')}</h3>
+    <p><strong>Total:</strong> ${fmt(reservation.total, 'NGN')}</p>
     <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
-    <p>Demo reservation only. No real hotel booking has been made.</p>
+
+    <div class="notice">
+      <strong>DEMO VERIFICATION ONLY</strong>
+      <p>Reference: ${escapeHtml(reservation.reference)}</p>
+      <p>This is a simulated receipt. It does not confirm a real hotel reservation or payment.</p>
+      <div style="font-size:13px;letter-spacing:3px;font-weight:bold;">
+        ▦ ▣ ▤ ▦ ▣
+      </div>
+      <small>Decorative code — not scannable</small>
+    </div>
 
     <button class="action" onclick="downloadHotelReceiptImage()">
       Download Receipt as PNG
     </button>
+
     <button class="action" onclick="printHotelReceipt()">
       Print Receipt
     </button>
+
     <button class="action" onclick="printHotelReceipt()">
       Save as PDF
     </button>
   `;
 
-  receipt.scrollIntoView({behavior:'smooth'});
+  receipt.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
 }
+
 
 function downloadTravelReceiptImage() {
   const receipt = document.getElementById('travelReceipt');
