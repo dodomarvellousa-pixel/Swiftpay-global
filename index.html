@@ -1051,7 +1051,7 @@ function bookDemoTravel(index) {
   const to = document.getElementById('travelTo').value.trim();
   const date = document.getElementById('travelDate').value;
   const passengers = Number(document.getElementById('travelPassengers').value);
-
+const departureTime = document.getElementById('travelDepartureTime')?.value || '';
   if (!option || !from || !to || !date) {
     toast('Please complete your travel details and search again.');
     return;
