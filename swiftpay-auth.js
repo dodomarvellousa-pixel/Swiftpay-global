@@ -573,7 +573,7 @@ profile.appendChild(profileActions);
     const welcome = document.querySelector("#swift-profile-name");
 
     if (welcome) {
-      welcome.textContent = "Welcome, " + account.name;
+      welcome.textContent = account.name;
     }
   }
 
