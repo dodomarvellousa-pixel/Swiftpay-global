@@ -472,8 +472,6 @@ const changePassword = document.createElement("button");
 changePassword.textContent = "Change Password";
 changePassword.className = "secondary";
 
-changePassword.onclick = () => {
-
 changePassword.onclick = async () => {
   const current = await swiftAuthDialog(
     "Verify Current Password",
