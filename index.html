@@ -1025,7 +1025,6 @@ function showShopProducts() {
 
 
 
-
 function addShopToCart(id) {
   const product = shopProducts.find(p => p.id === Number(id));
 
@@ -1043,8 +1042,11 @@ function addShopToCart(id) {
   }
 
   renderShopCart();
+  showShopProducts();
+
   toast('Product added to demo cart.');
 }
+
 
 
 function viewShopProduct(id) {
