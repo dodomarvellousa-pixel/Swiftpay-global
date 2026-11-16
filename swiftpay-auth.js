@@ -394,11 +394,16 @@ const resetInactivityTimer = () => {
   clearTimeout(inactivityTimer);
   saveSession();
 
-  inactivityTimer = setTimeout(() => {
-    clearSession();
-    alert("You have been logged out due to 10 minutes of inactivity.");
-    location.reload();
-  }, SESSION_TIMEOUT_MS);
+inactivityTimer = setTimeout(async () => {
+  clearSession();
+
+  await swiftAuthDialog(
+    "Session Expired",
+    "You have been logged out due to 10 minutes of inactivity."
+  );
+
+  location.reload();
+}, SESSION_TIMEOUT_MS);
 };
 
 const activityEvents = ["click", "touchstart", "keydown", "scroll"];
