@@ -899,19 +899,26 @@ function payBillDemo() {
 
 let shopCartItems = [];
 
+
 function showShopProducts() {
   const search = document.getElementById('shopSearch').value.toLowerCase().trim();
   const category = document.getElementById('shopCategory').value;
 
-  const filtered = shopProducts.filter(p =>
-    (category === 'All' || p.category === category) &&
-    p.name.toLowerCase().includes(search)
-  );
+  const filtered = shopProducts.filter(p => {
+    const matchesSearch =
+      p.name.toLowerCase().includes(search) ||
+      p.category.toLowerCase().includes(search);
+
+    const matchesCategory =
+      category === 'All' || p.category === category;
+
+    return matchesSearch && matchesCategory;
+  });
 
   const container = document.getElementById('shopProducts');
 
   if (!filtered.length) {
-    container.innerHTML = '<p>No matching demo products found.</p>';
+    container.innerHTML = '<p>No matching demo products found. Try another search.</p>';
     return;
   }
 
@@ -928,6 +935,7 @@ function showShopProducts() {
     </div>
   `).join('');
 }
+
 
 
 function addShopToCart(id) {
