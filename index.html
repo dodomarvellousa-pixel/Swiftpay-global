@@ -1303,82 +1303,8 @@ function reserveDemoHotel(id) {
   );
 
   renderDemoHotelReservations();
-  toast('Demo hotel reservation saved.');
-}
-function renderDemoHotelReservations() {
-  const container = document.getElementById('hotelReservations');
-
-  if (!container) return;
-
-  if (!hotelReservations.length) {
-    container.innerHTML = '<p>No demo reservations yet.</p>';
-    return;
-  }
-
-  container.innerHTML = hotelReservations.map(r => `
-    <div class="tx">
-      <div class="txmain">
-        <strong>${escapeHtml(r.hotel)}</strong>
-        <small>${escapeHtml(r.city)}</small>
-        <small>Check-in: ${escapeHtml(r.checkin)}</small>
-        <small>Check-out: ${escapeHtml(r.checkout)}</small>
-        <small>${r.guests} Guest(s) · ${r.nights} Night(s)</small>
-        <small>Reference: ${escapeHtml(r.reference)}</small>
-        <strong>${fmt(r.total, 'NGN')}</strong>
-        <small>${escapeHtml(r.status)}</small>
-
-        <button class="action"
-          onclick="viewHotelReceipt('${escapeHtml(r.reference)}')">
-          View Receipt
-        </button>
-      </div>
-    </div>
-  `).join('');
- }
-function viewHotelReceipt(reference) {
-  const reservation = hotelReservations.find(
-    r => r.reference === reference
-  );
-
-  if (!reservation) {
-    toast('Hotel receipt not found.');
-    return;
-  }
-
-  const checkin = new Date(reservation.checkin + 'T00:00:00');
-  const checkout = new Date(reservation.checkout + 'T00:00:00');
-  const nights = Math.round(
-    (checkout - checkin) / (1000 * 60 * 60 * 24)
-  );
-
-  const receipt = document.getElementById('hotelReceipt');
-
-  receipt.style.display = 'block';
-  receipt.innerHTML = `
-    <h2>SwiftPay Global</h2>
-    <h3>Hotel Booking Receipt</h3>
-    <p><strong>Reference:</strong> ${escapeHtml(reservation.reference)}</p>
-    <p><strong>Hotel:</strong> ${escapeHtml(reservation.hotel)}</p>
-    <p><strong>Destination:</strong> ${escapeHtml(reservation.city)}</p>
-    <p><strong>Check-in:</strong> ${escapeHtml(reservation.checkin)}</p>
-    <p><strong>Check-out:</strong> ${escapeHtml(reservation.checkout)}</p>
-    <p><strong>Guests:</strong> ${reservation.guests}</p>
-    <p><strong>Nights:</strong> ${nights}</p>
-    <h3>Total: ${fmt(reservation.total, 'NGN')}</h3>
-    <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
-    <p>Demo reservation only. No real hotel booking has been made.</p>
-
-    <button class="action" onclick="printHotelReceipt()">
-      Print Receipt
-    </button>
-    <button class="action" onclick="printHotelReceipt()">
-      Save as PDF
-    </button>
-  `;
-
-  receipt.scrollIntoView({behavior:'smooth'});
-}
- function printHotelReceipt() {
+ 
+function printHotelReceipt() {
   const receipt = document.getElementById('hotelReceipt');
 
   if (!receipt || !receipt.innerHTML) {
@@ -1419,7 +1345,133 @@ function viewHotelReceipt(reference) {
     </html>
   `);
 
-    printWindow.document.close();
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+}
+ 
+  toast('Demo hotel reservation saved.');
+}
+function renderDemoHotelReservations() {
+  const container = document.getElementById('hotelReservations');
+
+  if (!container) return;
+
+  if (!hotelReservations.length) {
+    container.innerHTML = '<p>No demo reservations yet.</p>';
+    return;
+  }
+
+  container.innerHTML = hotelReservations.map(r => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(r.hotel)}</strong>
+        <small>${escapeHtml(r.city)}</small>
+        <small>Check-in: ${escapeHtml(r.checkin)}</small>
+        <small>Check-out: ${escapeHtml(r.checkout)}</small>
+        <small>${r.guests} Guest(s) · ${r.nights} Night(s)</small>
+        <small>Reference: ${escapeHtml(r.reference)}</small>
+        <strong>${fmt(r.total, 'NGN')}</strong>
+        <small>${escapeHtml(r.status)}</small>
+
+        <button class="action"
+          onclick="viewHotelReceipt('${escapeHtml(r.reference)}')">
+          View Receipt
+        </button>
+      </div>
+    </div>
+  `).join('');
+ }
+
+function viewHotelReceipt(reference) {
+  const reservation = hotelReservations.find(
+    r => r.reference === reference
+  );
+
+  if (!reservation) {
+    toast('Hotel receipt not found.');
+    return;
+  }
+
+  const checkin = new Date(reservation.checkin + 'T00:00:00');
+  const checkout = new Date(reservation.checkout + 'T00:00:00');
+  const nights = Math.round(
+    (checkout - checkin) / (1000 * 60 * 60 * 24)
+  );
+
+  const receipt = document.getElementById('hotelReceipt');
+
+  receipt.style.display = 'block';
+  receipt.innerHTML = `
+    <h2>SwiftPay Global</h2>
+    <h3>Hotel Booking Receipt</h3>
+    <p><strong>Reference:</strong> ${escapeHtml(reservation.reference)}</p>
+    <p><strong>Hotel:</strong> ${escapeHtml(reservation.hotel)}</p>
+    <p><strong>Destination:</strong> ${escapeHtml(reservation.city)}</p>
+    <p><strong>Check-in:</strong> ${escapeHtml(reservation.checkin)}</p>
+    <p><strong>Check-out:</strong> ${escapeHtml(reservation.checkout)}</p>
+    <p><strong>Guests:</strong> ${reservation.guests}</p>
+    <p><strong>Nights:</strong> ${nights}</p>
+    <h3>Total: ${fmt(reservation.total, 'NGN')}</h3>
+    <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
+    <p>Demo reservation only. No real hotel booking has been made.</p>
+
+    <button class="action" onclick="downloadHotelReceiptImage()">
+      Download Receipt as PNG
+    </button>
+    <button class="action" onclick="printHotelReceipt()">
+      Print Receipt
+    </button>
+    <button class="action" onclick="printHotelReceipt()">
+      Save as PDF
+    </button>
+  `;
+
+  receipt.scrollIntoView({behavior:'smooth'});
+}
+
+function printHotelReceipt() {
+  const receipt = document.getElementById('hotelReceipt');
+
+  if (!receipt || !receipt.innerHTML) {
+    toast('Open a hotel receipt first.');
+    return;
+  }
+
+  const printWindow = window.open('', '_blank');
+
+  if (!printWindow) {
+    toast('Allow pop-ups to print the receipt.');
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>SwiftPay Hotel Receipt</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 25px;
+          color: #172033;
+        }
+        h2, h3 {
+          color: #102b54;
+        }
+        p {
+          margin: 12px 0;
+        }
+      </style>
+    </head>
+    <body>
+      ${receipt.innerHTML}
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
   printWindow.focus();
   printWindow.print();
 }
