@@ -445,7 +445,7 @@ if (profileName && !document.getElementById("swift-profile-email")) {
 
     if (profile && !document.querySelector("#swift-logout")) {
       const row = document.createElement("div");
-      row.innerHTML = "<strong id='swift-profile-name'></strong>";
+      row.innerHTML = "<strong>Profile: <span id='swift-profile-name'></span></strong>";
       profile.prepend(row);
 
       const logout = document.createElement("button");
@@ -538,8 +538,36 @@ changePassword.onclick = async () => {
 };
 
 
-profile.appendChild(changePassword);
-profile.appendChild(logout);
+const profileActions = document.createElement("div");
+
+profileActions.style.cssText = `
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:18px;
+  width:100%;
+`;
+
+[changePassword, logout].forEach(button => {
+  button.style.cssText = `
+    display:block;
+    width:100%;
+    box-sizing:border-box;
+    padding:14px 18px;
+    margin:0;
+    border:0;
+    border-radius:12px;
+    background:#102b54;
+    color:#ffffff;
+    font-size:15px;
+    font-weight:700;
+    text-align:center;
+    cursor:pointer;
+  `;
+  profileActions.appendChild(button);
+});
+
+profile.appendChild(profileActions);
     }
 
     const welcome = document.querySelector("#swift-profile-name");
