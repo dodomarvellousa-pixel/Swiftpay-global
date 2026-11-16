@@ -213,7 +213,8 @@ body.balances-hidden #crypto .panel .positive {
 <section id="activity" class="page">
  <h1 class="page-title">Activity</h1><p class="page-intro">Your simulated transaction history.</p><div class="panel" id="allActivity"></div>
 </section>
- <section id="receipt" class="page">
+
+<section id="receipt" class="page">
  <h1 class="page-title">Transaction Receipt</h1>
  <p class="page-intro">Your SwiftPay transaction record.</p>
 
@@ -221,13 +222,23 @@ body.balances-hidden #crypto .panel .positive {
   <p>Select a transaction to view its receipt.</p>
  </div>
 
- <button class="primary" onclick="window.print()">Print Receipt</button>
- <button class="action" onclick="showPage('activity')">Back to Activity</button>
+ <button class="primary" onclick="downloadReceiptImage()">
+  Download Receipt as PNG
+ </button>
+
+ <button class="primary" onclick="window.print()">
+  Print Receipt
+ </button>
+
+ <button class="action" onclick="showPage('activity')">
+  Back to Activity
+ </button>
 
  <div class="notice">
   Demo receipt only. This is not proof of a real payment.
  </div>
- </section>
+</section>
+
  <section id="shopping" class="page">
   <h1 class="page-title">Shopping Marketplace</h1>
   <p class="page-intro">Explore Nigerian and international stores.</p>
