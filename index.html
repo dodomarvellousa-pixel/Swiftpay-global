@@ -962,6 +962,7 @@ let shopCartItems = [];
 
 
 
+
 function showShopProducts() {
   const search = document.getElementById('shopSearch').value.toLowerCase().trim();
   const category = document.getElementById('shopCategory').value;
@@ -984,24 +985,42 @@ function showShopProducts() {
     return;
   }
 
-  container.innerHTML = filtered.map(p => `
-    <div class="tx">
-      <div class="txmain">
-        <div style="font-size:48px; text-align:center; padding:12px;">
-          ${p.icon || '🛍️'}
+  container.innerHTML = filtered.map(p => {
+    const cartItem = shopCartItems.find(item => item.id === p.id);
+    const quantity = cartItem ? cartItem.quantity : 0;
+
+    return `
+      <div class="tx">
+        <div class="txmain">
+          <div style="font-size:48px; text-align:center; padding:12px;">
+            ${escapeHtml(p.icon || '🛍️')}
+          </div>
+
+          <strong>${escapeHtml(p.name)}</strong>
+          <small>${escapeHtml(p.category)}</small>
+          <strong>${fmt(p.price, 'NGN')}</strong>
+
+          <small style="
+            color:#102b54;
+            font-weight:800;
+            background:#edf3fc;
+            padding:7px;
+            border-radius:8px;
+          ">
+            In Cart: ${quantity}
+          </small>
+
+          <button class="secondary" onclick="viewShopProduct(${p.id})">
+            View Details
+          </button>
+
+          <button class="action" onclick="addShopToCart(${p.id})">
+            Add to Cart
+          </button>
         </div>
-        <strong>${escapeHtml(p.name)}</strong>
-        <small>${escapeHtml(p.category)}</small>
-        <strong>${fmt(p.price, 'NGN')}</strong>
-       <button class="secondary" onclick="viewShopProduct(${p.id})">
-  View Details
-</button>
-        <button class="action" onclick="addShopToCart(${p.id})">
-          Add to Cart
-        </button>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 
@@ -1027,6 +1046,7 @@ function addShopToCart(id) {
   toast('Product added to demo cart.');
 }
 
+
 function viewShopProduct(id) {
   const product = shopProducts.find(p => p.id === Number(id));
 
@@ -1037,6 +1057,9 @@ function viewShopProduct(id) {
 
   const oldModal = document.getElementById('shopProductModal');
   if (oldModal) oldModal.remove();
+
+  const cartItem = shopCartItems.find(item => item.id === product.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
 
   const modal = document.createElement('div');
   modal.id = 'shopProductModal';
@@ -1079,6 +1102,17 @@ function viewShopProduct(id) {
         ${fmt(product.price, 'NGN')}
       </h2>
 
+      <div style="
+        background:#edf3fc;
+        color:#102b54;
+        padding:12px;
+        border-radius:10px;
+        font-weight:800;
+        margin:15px 0;
+      ">
+        In Cart: <span id="shopDetailsQuantity">${quantity}</span>
+      </div>
+
       <p style="
         background:#fff8e8;
         padding:12px;
@@ -1111,6 +1145,8 @@ function closeShopProductDetails() {
   const modal = document.getElementById('shopProductModal');
   if (modal) modal.remove();
 }
+ 
+
 
 
 
@@ -1162,8 +1198,33 @@ function renderShopCart() {
     </div>
   `).join('') + `
     <h3>Cart Total: ${fmt(total, 'NGN')}</h3>
+
+    <button class="primary"
+      onclick="clearShopCart()"
+      style="background:#c0392b;">
+      Clear Shopping Cart
+    </button>
   `;
 }
+
+function clearShopCart() {
+  if (!shopCartItems.length) {
+    toast('Your shopping cart is already empty.');
+    return;
+  }
+
+  if (!confirm('Are you sure you want to clear all items from your demo shopping cart?')) {
+    return;
+  }
+
+  shopCartItems = [];
+
+  renderShopCart();
+  showShopProducts();
+
+  toast('Shopping cart cleared successfully.');
+}
+ 
 
 
 function removeShopFromCart(id) {
