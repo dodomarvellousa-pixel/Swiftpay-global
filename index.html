@@ -1229,11 +1229,20 @@ function clearShopCart() {
  
 
 
+
 function removeShopFromCart(id) {
-  shopCartItems = shopCartItems.filter(item => item.id !== id);
+  shopCartItems = shopCartItems.filter(
+    item => item.id !== Number(id)
+  );
+
   renderShopCart();
- }
+  showShopProducts();
+
+  toast('Product removed from demo cart.');
+}
+
  
+
 function changeShopQuantity(id, change) {
   const item = shopCartItems.find(
     p => p.id === Number(id)
@@ -1247,8 +1256,9 @@ function changeShopQuantity(id, change) {
   item.quantity = Math.max(1, item.quantity + change);
 
   renderShopCart();
+  showShopProducts();
 }
- 
+
 
  const demoTravelOptions = {
   Flight: [
