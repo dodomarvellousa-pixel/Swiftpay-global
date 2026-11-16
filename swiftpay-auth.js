@@ -444,9 +444,7 @@ if (profileName && !document.getElementById("swift-profile-email")) {
     const profile = document.querySelector("#profile .panel");
 
     if (profile && !document.querySelector("#swift-logout")) {
-      const row = document.createElement("div");
-      row.innerHTML = "<strong>Profile: <span id='swift-profile-name'></span></strong>";
-      profile.prepend(row);
+    
 
       const logout = document.createElement("button");
       logout.id = "swift-logout";
