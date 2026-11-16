@@ -161,6 +161,91 @@
 
   let mode = "signup";
   const $ = id => root.querySelector("#" + id);
+  
+function swiftAuthDialog(title, message, options = {}) {
+  return new Promise(resolve => {
+    const hasInput = options.input === true;
+
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `
+      position:fixed;inset:0;z-index:100000;
+      display:flex;align-items:center;justify-content:center;
+      padding:20px;background:rgba(5,18,40,.75);
+    `;
+
+    const box = document.createElement("div");
+    box.style.cssText = `
+      width:100%;max-width:360px;background:white;
+      padding:24px;border-radius:20px;
+      color:#172033;font-family:system-ui,sans-serif;
+      box-shadow:0 15px 50px rgba(0,0,0,.25);
+    `;
+
+    const brand = document.createElement("div");
+    brand.textContent = "S SwiftPay Global";
+    brand.style.cssText =
+      "font-size:13px;font-weight:800;color:#246bfd;margin-bottom:14px;";
+
+    const heading = document.createElement("h3");
+    heading.textContent = title;
+    heading.style.cssText =
+      "margin:0 0 10px;color:#102b54;font-size:20px;";
+
+    const description = document.createElement("p");
+    description.textContent = message;
+    description.style.cssText =
+      "margin:0 0 18px;line-height:1.6;color:#536176;";
+
+    let input = null;
+
+    if (hasInput) {
+      input = document.createElement("input");
+      input.type = options.password ? "password" : "text";
+      input.placeholder = options.placeholder || "Enter here";
+      input.autocomplete = "off";
+      input.style.cssText = `
+        width:100%;box-sizing:border-box;padding:13px;
+        border:1px solid #dbe3ef;border-radius:10px;
+        font-size:15px;margin-bottom:18px;
+      `;
+    }
+
+    const buttons = document.createElement("div");
+    buttons.style.cssText = "display:flex;gap:10px;";
+
+    function finish(value) {
+      overlay.remove();
+      resolve(value);
+    }
+
+    if (hasInput) {
+      const cancel = document.createElement("button");
+      cancel.textContent = "Cancel";
+      cancel.style.cssText =
+        "flex:1;padding:13px;border:1px solid #dbe3ef;border-radius:10px;background:#f1f4f9;color:#26364d;font-weight:bold;";
+      cancel.onclick = () => finish(null);
+      buttons.appendChild(cancel);
+    }
+
+    const ok = document.createElement("button");
+    ok.textContent = options.confirmText || "OK";
+    ok.style.cssText =
+      "flex:1;padding:13px;border:0;border-radius:10px;background:#102b54;color:white;font-weight:bold;";
+    ok.onclick = () => finish(hasInput ? input.value : true);
+    buttons.appendChild(ok);
+
+    box.append(brand, heading, description);
+
+    if (input) box.appendChild(input);
+
+    box.appendChild(buttons);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    if (input) input.focus();
+  });
+  }
+  
   const passwordInput = $("swift-password");
 const strengthDisplay = $("swift-password-strength");
 const requirements = {
@@ -222,41 +307,67 @@ updateRequirement(requirements.number, hasNumber, "One number");
       $("swift-toggle-password").textContent = "Show password";
     }
   };
-    $("swift-forgot-password").onclick = () => {
-    const account = readAccount();
-    const email = $("swift-email").value.trim().toLowerCase();
+    
+$("swift-forgot-password").onclick = async () => {
+  const account = readAccount();
+  const email = $("swift-email").value.trim().toLowerCase();
 
-    if (!account || account.email !== email) {
-      alert("Enter the registered email address.");
-      return;
-    }
-
-    const newPassword = prompt(
-      "Enter your new password (at least 8 characters):"
+  if (!account || account.email !== email) {
+    await swiftAuthDialog(
+      "Password Recovery",
+      "Enter the registered email address."
     );
+    return;
+  }
 
-    if (newPassword === null) return;
+  const newPassword = await swiftAuthDialog(
+    "Create New Password",
+    "Enter your new password (at least 8 characters):",
+    { input: true, password: true, placeholder: "New password", confirmText: "Continue" }
+  );
 
-    if (newPassword.length < 8) {
-      alert("Password must be at least 8 characters.");
-      return;
-    }
+  if (newPassword === null) return;
 
-    const confirmPassword = prompt("Confirm your new password:");
+  if (
+    newPassword.length < 8 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[0-9]/.test(newPassword)
+  ) {
+    await swiftAuthDialog(
+      "Invalid Password",
+      "Password must be at least 8 characters and include uppercase, lowercase, and a number."
+    );
+    return;
+  }
 
-    if (confirmPassword === null) return;
+  const confirmPassword = await swiftAuthDialog(
+    "Confirm New Password",
+    "Enter your new password again:",
+    { input: true, password: true, placeholder: "Confirm password", confirmText: "Confirm" }
+  );
 
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
+  if (confirmPassword === null) return;
 
-    account.passwordHash = hashPassword(newPassword);
-    saveAccount(account);
-    saveLoginGuard({ count: 0, lockedUntil: 0 });
-    $("swift-password").value = "";
-    alert("Demo password reset successfully. You can now log in.");
-  };
+  if (newPassword !== confirmPassword) {
+    await swiftAuthDialog(
+      "Password Mismatch",
+      "Passwords do not match."
+    );
+    return;
+  }
+
+  account.passwordHash = hashPassword(newPassword);
+  saveAccount(account);
+  saveLoginGuard({ count: 0, lockedUntil: 0 });
+  $("swift-password").value = "";
+
+  await swiftAuthDialog(
+    "Password Reset Successful",
+    "Your demo password has been reset. You can now log in."
+  );
+};
+
   function setMode(next) {
     mode = next;
     $("swift-password-requirements").hidden = mode !== "signup";
@@ -357,40 +468,72 @@ changePassword.textContent = "Change Password";
 changePassword.className = "secondary";
 
 changePassword.onclick = () => {
-  const current = prompt("Enter your current password:");
+
+changePassword.onclick = async () => {
+  const current = await swiftAuthDialog(
+    "Verify Current Password",
+    "Enter your current password:",
+    { input: true, password: true, placeholder: "Current password" }
+  );
+
   if (current === null) return;
 
   const accountData = readAccount();
 
   if (!accountData || hashPassword(current) !== accountData.passwordHash) {
-    alert("Current password is incorrect.");
+    await swiftAuthDialog(
+      "Password Verification Failed",
+      "Your current password is incorrect."
+    );
     return;
   }
 
-  const newPassword = prompt("Enter your new password (at least 8 characters):");
+  const newPassword = await swiftAuthDialog(
+    "Change Password",
+    "Enter your new password. It must contain at least 8 characters, uppercase, lowercase and a number.",
+    { input: true, password: true, placeholder: "New password" }
+  );
+
   if (newPassword === null) return;
+
   if (
     newPassword.length < 8 ||
     !/[A-Z]/.test(newPassword) ||
     !/[a-z]/.test(newPassword) ||
     !/[0-9]/.test(newPassword)
   ) {
-    alert("Password must be at least 8 characters and include uppercase, lowercase, and a number.");
+    await swiftAuthDialog(
+      "Invalid New Password",
+      "Use at least 8 characters, including uppercase, lowercase and a number."
+    );
     return;
   }
-  
 
-  const confirmPassword = prompt("Confirm your new password:");
+  const confirmPassword = await swiftAuthDialog(
+    "Confirm New Password",
+    "Enter your new password again:",
+    { input: true, password: true, placeholder: "Confirm password" }
+  );
+
   if (confirmPassword === null) return;
 
   if (newPassword !== confirmPassword) {
-    alert("Passwords do not match.");
+    await swiftAuthDialog(
+      "Password Mismatch",
+      "The passwords do not match."
+    );
     return;
   }
+
   accountData.passwordHash = hashPassword(newPassword);
   saveAccount(accountData);
-  alert("Demo password changed successfully.");
+
+  await swiftAuthDialog(
+    "Password Changed Successfully",
+    "Your SwiftPay Global demo password has been updated."
+  );
 };
+
 
 profile.appendChild(changePassword);
 profile.appendChild(logout);
