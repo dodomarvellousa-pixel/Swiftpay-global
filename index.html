@@ -1536,6 +1536,7 @@ function renderDemoHotelReservations() {
  }
 
 
+
 function viewHotelReceipt(reference) {
   const reservation = hotelReservations.find(
     r => r.reference === reference
@@ -1560,12 +1561,15 @@ function viewHotelReceipt(reference) {
     return;
   }
 
+  const receiptDate = new Date().toLocaleString();
+
   receipt.style.display = 'block';
 
   receipt.innerHTML = `
     <h2>SwiftPay Global</h2>
     <h3>Hotel Booking Receipt</h3>
 
+    <p><strong>Receipt Generated:</strong> ${escapeHtml(receiptDate)}</p>
     <p><strong>Reference:</strong> ${escapeHtml(reservation.reference)}</p>
     <p><strong>Hotel:</strong> ${escapeHtml(reservation.hotel)}</p>
     <p><strong>Destination:</strong> ${escapeHtml(reservation.city)}</p>
@@ -1574,12 +1578,18 @@ function viewHotelReceipt(reference) {
     <p><strong>Guests:</strong> ${reservation.guests}</p>
     <p><strong>Nights:</strong> ${nights}</p>
     <p><strong>Total:</strong> ${fmt(reservation.total, 'NGN')}</p>
-    <p><strong>Status:</strong> ${escapeHtml(reservation.status)}</p>
+
+    <p>
+      <strong>Status:</strong>
+      <span style="display:inline-block;background:#e8eef8;color:#102b54;padding:5px 12px;border-radius:20px;font-weight:bold;">
+        ${escapeHtml(reservation.status)}
+      </span>
+    </p>
 
     <div class="notice">
       <strong>DEMO VERIFICATION ONLY</strong>
       <p>Reference: ${escapeHtml(reservation.reference)}</p>
-      <p>This is a simulated receipt. It does not confirm a real hotel reservation or payment.</p>
+      <p>This simulated receipt does not confirm a real hotel reservation or payment.</p>
       <div style="font-size:13px;letter-spacing:3px;font-weight:bold;">
         ▦ ▣ ▤ ▦ ▣
       </div>
@@ -1597,6 +1607,11 @@ function viewHotelReceipt(reference) {
     <button class="action" onclick="printHotelReceipt()">
       Save as PDF
     </button>
+
+    <p style="text-align:center;color:#64748b;font-size:11px;border-top:1px solid #dbe3ef;margin-top:20px;padding-top:15px;">
+      SwiftPay Global · Simulated Demo Service<br>
+      No real hotel bookings or payments issued.
+    </p>
   `;
 
   receipt.scrollIntoView({
@@ -1604,6 +1619,7 @@ function viewHotelReceipt(reference) {
     block: 'start'
   });
 }
+
 
 
 function downloadTravelReceiptImage() {
