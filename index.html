@@ -968,7 +968,35 @@ function viewSupportComplaint(reference) {
   close.style.width = '100%';
   close.onclick = () => overlay.remove();
 
+  
+if (complaint.attachment && complaint.attachment.data) {
+  const imageTitle = document.createElement('h3');
+  imageTitle.textContent = 'Attached Evidence';
+  imageTitle.style.color = '#102b54';
+
+  const image = document.createElement('img');
+  image.src = complaint.attachment.data;
+  image.alt = 'Customer complaint attachment';
+  image.style.cssText = `
+    display:block;
+    width:100%;
+    max-height:300px;
+    object-fit:contain;
+    background:#f1f4f9;
+    border-radius:12px;
+    margin:12px 0;
+  `;
+
+  const imageName = document.createElement('p');
+  imageName.textContent = complaint.attachment.name;
+  imageName.style.fontSize = '12px';
+  imageName.style.color = '#64748b';
+
+  box.append(heading, details, imageTitle, image, imageName, note, close);
+} else {
   box.append(heading, details, note, close);
+}
+
   overlay.appendChild(box);
 
   overlay.addEventListener('click', event => {
