@@ -863,6 +863,7 @@ function getSupportComplaints() {
   }
 }
 
+
 function renderSupportComplaints() {
   const container = document.getElementById('supportHistory');
   if (!container) return;
@@ -882,12 +883,14 @@ function renderSupportComplaints() {
         <small>Ticket: ${escapeHtml(item.reference)}</small>
         <small>Date: ${escapeHtml(item.date)}</small>
         <small>Status: ${escapeHtml(item.status)}</small>
-        <p>${escapeHtml(item.message)}</p>
-        ${item.transactionReference ? `<small>Related reference: ${escapeHtml(item.transactionReference)}</small>` : ''}
+        <button class="action" onclick="viewSupportComplaint('${escapeHtml(item.reference)}')">
+          View Complaint Details
+        </button>
       </div>
     </div>
   `).join('');
 }
+
 
 function submitSupportComplaint() {
   const category = document.getElementById('supportCategory').value;
