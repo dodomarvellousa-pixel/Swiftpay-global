@@ -851,7 +851,80 @@ function downloadReceiptImage() {
     toast('Receipt image downloaded.');
   }, 'image/png');
  }
-   
+
+const supportStorageKey = 'swiftpay_demo_support_complaints_v1';
+
+function getSupportComplaints() {
+  try {
+    return JSON.parse(localStorage.getItem(supportStorageKey) || '[]');
+  } catch (error) {
+    return [];
+  }
+}
+
+function renderSupportComplaints() {
+  const container = document.getElementById('supportHistory');
+  if (!container) return;
+
+  const complaints = getSupportComplaints();
+
+  if (!complaints.length) {
+    container.innerHTML = '<p>No complaints submitted yet.</p>';
+    return;
+  }
+
+  container.innerHTML = complaints.slice().reverse().map(item => `
+    <div class="tx">
+      <div class="txmain">
+        <strong>${escapeHtml(item.category)}</strong>
+        <small>${escapeHtml(item.subject)}</small>
+        <small>Ticket: ${escapeHtml(item.reference)}</small>
+        <small>Date: ${escapeHtml(item.date)}</small>
+        <small>Status: ${escapeHtml(item.status)}</small>
+        <p>${escapeHtml(item.message)}</p>
+        ${item.transactionReference ? `<small>Related reference: ${escapeHtml(item.transactionReference)}</small>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function submitSupportComplaint() {
+  const category = document.getElementById('supportCategory').value;
+  const subject = document.getElementById('supportSubject').value.trim();
+  const message = document.getElementById('supportMessage').value.trim();
+  const transactionReference = document.getElementById('supportReference').value.trim();
+
+  if (!category || !subject || !message) {
+    document.getElementById('supportHistory').innerHTML =
+      '<p>Please select a category and enter a subject and complaint description before submitting.</p>';
+    return;
+  }
+
+  const complaints = getSupportComplaints();
+
+  const complaint = {
+    reference: 'SPC-' + Date.now(),
+    category,
+    subject,
+    message,
+    transactionReference,
+    date: new Date().toLocaleString(),
+    status: 'Submitted'
+  };
+
+  complaints.push(complaint);
+  localStorage.setItem(supportStorageKey, JSON.stringify(complaints));
+
+  document.getElementById('supportCategory').value = '';
+  document.getElementById('supportSubject').value = '';
+  document.getElementById('supportMessage').value = '';
+  document.getElementById('supportReference').value = '';
+
+  renderSupportComplaints();
+}
+ 
+renderSupportComplaints();
+ 
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo(0,0)}
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
