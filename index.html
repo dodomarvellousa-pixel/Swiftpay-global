@@ -570,6 +570,16 @@ body.balances-hidden #crypto .panel .positive {
       <input id="supportReference" type="text" placeholder="Enter reference number">
     </div>
 
+<div class="field">
+  <label for="supportAttachment">Attach Screenshot or Photo (Optional)</label>
+  <input
+    id="supportAttachment"
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+  >
+  <small>Upload a JPG, PNG or WebP image. Maximum size: 1 MB.</small>
+</div>
+   
     <button class="primary" onclick="submitSupportComplaint()">
       Submit Complaint
     </button>
@@ -968,11 +978,14 @@ function viewSupportComplaint(reference) {
   document.body.appendChild(overlay);
 }
  
-function submitSupportComplaint() {
+
+async function submitSupportComplaint() {
   const category = document.getElementById('supportCategory').value;
   const subject = document.getElementById('supportSubject').value.trim();
   const message = document.getElementById('supportMessage').value.trim();
   const transactionReference = document.getElementById('supportReference').value.trim();
+  const attachmentInput = document.getElementById('supportAttachment');
+  const file = attachmentInput.files[0];
 
   if (!category || !subject || !message) {
     document.getElementById('supportHistory').innerHTML =
@@ -980,25 +993,72 @@ function submitSupportComplaint() {
     return;
   }
 
-  const complaints = getSupportComplaints();
+  if (file && !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    document.getElementById('supportHistory').innerHTML =
+      '<p>Please attach a JPG, PNG or WebP image.</p>';
+    return;
+  }
 
-  const complaint = {
-    reference: 'SPC-' + Date.now(),
-    category,
-    subject,
-    message,
-    transactionReference,
-    date: new Date().toLocaleString(),
-    status: 'Submitted'
+  if (file && file.size > 1024 * 1024) {
+    document.getElementById('supportHistory').innerHTML =
+      '<p>Your image is too large. Please choose an image smaller than 1 MB.</p>';
+    return;
+  }
+
+  const saveComplaint = attachment => {
+    const complaints = getSupportComplaints();
+
+    const complaint = {
+      reference: 'SPC-' + Date.now(),
+      category,
+      subject,
+      message,
+      transactionReference,
+      attachment: attachment || null,
+      date: new Date().toLocaleString(),
+      status: 'Submitted'
+    };
+
+    complaints.push(complaint);
+
+    try {
+      localStorage.setItem(supportStorageKey, JSON.stringify(complaints));
+    } catch (error) {
+      document.getElementById('supportHistory').innerHTML =
+        '<p>Unable to save this complaint. Please try a smaller image or remove the attachment.</p>';
+      return;
+    }
+
+    document.getElementById('supportCategory').value = '';
+    document.getElementById('supportSubject').value = '';
+    document.getElementById('supportMessage').value = '';
+    document.getElementById('supportReference').value = '';
+    attachmentInput.value = '';
+
+    renderSupportComplaints();
   };
 
-  complaints.push(complaint);
-  localStorage.setItem(supportStorageKey, JSON.stringify(complaints));
+  if (!file) {
+    saveComplaint(null);
+    return;
+  }
 
-  document.getElementById('supportCategory').value = '';
-  document.getElementById('supportSubject').value = '';
-  document.getElementById('supportMessage').value = '';
-  document.getElementById('supportReference').value = '';
+  const reader = new FileReader();
+
+  reader.onload = () => saveComplaint({
+    name: file.name,
+    type: file.type,
+    data: reader.result
+  });
+
+  reader.onerror = () => {
+    document.getElementById('supportHistory').innerHTML =
+      '<p>Could not read the selected image. Please try again.</p>';
+  };
+
+  reader.readAsDataURL(file);
+}
+
 
   renderSupportComplaints();
 }
