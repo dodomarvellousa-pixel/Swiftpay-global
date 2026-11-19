@@ -892,6 +892,82 @@ function renderSupportComplaints() {
 }
 
 
+function viewSupportComplaint(reference) {
+  const complaint = getSupportComplaints().find(
+    item => item.reference === reference
+  );
+
+  if (!complaint) return;
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    background:rgba(5,18,40,.75);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+  `;
+
+  const box = document.createElement('div');
+  box.style.cssText = `
+    width:100%;
+    max-width:400px;
+    max-height:85vh;
+    overflow-y:auto;
+    background:white;
+    color:#172033;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 15px 50px rgba(0,0,0,.25);
+    font-family:Arial,sans-serif;
+  `;
+
+  const heading = document.createElement('h2');
+  heading.textContent = 'Complaint Details';
+  heading.style.color = '#102b54';
+
+  const details = document.createElement('div');
+  details.style.cssText = 'line-height:1.8;overflow-wrap:anywhere;';
+
+  function addDetail(label, value) {
+    const line = document.createElement('p');
+    const strong = document.createElement('strong');
+    strong.textContent = label + ': ';
+    line.append(strong, document.createTextNode(value || 'Not provided'));
+    details.appendChild(line);
+  }
+
+  addDetail('Ticket Number', complaint.reference);
+  addDetail('Category', complaint.category);
+  addDetail('Subject', complaint.subject);
+  addDetail('Description', complaint.message);
+  addDetail('Related Reference', complaint.transactionReference);
+  addDetail('Date Submitted', complaint.date);
+  addDetail('Current Status', complaint.status);
+
+  const note = document.createElement('p');
+  note.textContent = 'This is a SwiftPay Global demo support ticket.';
+  note.style.cssText = 'color:#64748b;font-size:12px;margin-top:16px;';
+
+  const close = document.createElement('button');
+  close.textContent = 'Close';
+  close.className = 'primary';
+  close.style.width = '100%';
+  close.onclick = () => overlay.remove();
+
+  box.append(heading, details, note, close);
+  overlay.appendChild(box);
+
+  overlay.addEventListener('click', event => {
+    if (event.target === overlay) overlay.remove();
+  });
+
+  document.body.appendChild(overlay);
+}
+ 
 function submitSupportComplaint() {
   const category = document.getElementById('supportCategory').value;
   const subject = document.getElementById('supportSubject').value.trim();
