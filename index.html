@@ -529,6 +529,64 @@ body.balances-hidden #crypto .panel .positive {
 </section>
  
  
+<section id="support" class="page">
+  <h1 class="page-title">Customer Support</h1>
+  <p class="page-intro">We're here to help you with any questions or complaints.</p>
+
+  <div class="panel">
+    <h2>Submit a Complaint</h2>
+    <p>Tell us what happened and our support team can review your report.</p>
+
+    <div class="field">
+      <label for="supportCategory">Complaint category</label>
+      <select id="supportCategory">
+        <option value="">Select a category</option>
+        <option>Wallet & Balance</option>
+        <option>Transfers</option>
+        <option>Airtime & Data</option>
+        <option>Bill Payments</option>
+        <option>Currency Exchange</option>
+        <option>Crypto</option>
+        <option>Shopping</option>
+        <option>Hotel Reservations</option>
+        <option>Travel Bookings</option>
+        <option>Login & Account</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="supportSubject">Complaint subject</label>
+      <input id="supportSubject" type="text" placeholder="Briefly describe your issue">
+    </div>
+
+    <div class="field">
+      <label for="supportMessage">Explain your complaint</label>
+      <textarea id="supportMessage" rows="5" placeholder="Tell us what happened..."></textarea>
+    </div>
+
+    <div class="field">
+      <label for="supportReference">Transaction or booking reference (optional)</label>
+      <input id="supportReference" type="text" placeholder="Enter reference number">
+    </div>
+
+    <button class="primary" onclick="submitSupportComplaint()">
+      Submit Complaint
+    </button>
+  </div>
+
+  <div class="panel">
+    <h2>My Complaints</h2>
+    <div id="supportHistory">
+      <p>No complaints submitted yet.</p>
+    </div>
+  </div>
+
+  <div class="notice">
+    SwiftPay Global Demo Support: complaints are currently stored on this device only. They are not yet sent to a live support team. Never include passwords, PINs or OTPs.
+  </div>
+</section>
+ 
 <section id="profile" class="page">
  <h1 class="page-title">Profile & settings</h1><p class="page-intro">Prototype account preferences.</p>
  <div class="panel">
